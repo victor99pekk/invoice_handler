@@ -1,0 +1,39 @@
+Appen används för att sammanställa ett godtyckligt antal fakturor till 7 separata filer. 
+
+5 av dessa filer håller reda på platser (Syd, Nord, City, Norrtälje och Södertälje). 
+Av de andra två output-filerna så innehåller en alla tillfällen där något skrivits in fel, Tex att tjänsten är ett nummer. 
+Den sista filen innehåller allt som har med kriminalvården att göra. 
+
+- Med ett tillfälle menas exemplevis: [220123 | 23.25 | Norrmalm | Dödsfall | ...]
+
+- Syd inkluderar platserna: Syd, Flemingsberg, Nacka, Söderort, Västberga.
+- Nord inkluderar platserna: Södermalm, Norrmalm.
+
+
+- INSTRUKTIONER:
+	
+	1. Kontrollera att det är rätt format på filerna(se nedan) som ska matas in, 
+	och att de ligger i en gemensam folder som bara innehåler filer som ska 
+	sammanställas.
+
+	2. Välj foldern där input-filerna ligger genom att trycka på knappen med texten
+	"folder".
+
+	3. Namnge sedan foldern där ouput-filerna ska ligga, förslagsvis något i stil med
+	"Januari24" för Januari 2024.
+
+	4. Tryck till sist på sammanställ, när knappen blivit grön finns output-filern
+	sammanställda.
+
+
+- FORMAT (input-filer)
+
+	Det är viktigt att dessa Kolunmer finns och döpta exakt:'Datum','Tid', 'Tjänst', 
+	'Distrikt', 'Pers.nr.', 'Resor (km)', 'Resor (kostnad)', 'Resor (kostnad)', 
+	'Kostnad'.
+
+	Det är dessa kolumner programmet tar med i de sammanställda filerna. Hur många som
+	helst andra kolumner kan vara med i input-filerna då de inte påverkar programmet. 
+
+
+
