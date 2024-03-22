@@ -10,6 +10,9 @@ def create_xls_file(file_path):
     open(file_path, 'w').close()
 
 def createTime():
+
+    emptyReturn()
+
     threeNbr = random.randint(0, 2)
     length = 5
 
@@ -33,20 +36,28 @@ def createTime():
         string = nbr + string
     return string
 
+def emptyReturn():
+    if random.randint(0, 100) < 5:
+        return ''
 
 def createDate():
-    return '2403' + str(random.randint(1, 30))
+    #emptyReturn()
+    #return '23' + '03' + str(random.randint(0, 1)) + str(random.randint(1, 9))
+    return '23' + '03' + str(random.randint(0, 2)) + str(random.randint(0, 9))
 
 def getDistrict():
+    emptyReturn()
     choice = random.choice(list(placeMapping.keys()))
     while choice == 'krim' or choice == 'kvv':
         choice = random.choice(list(placeMapping.keys()))
     return choice
 
 def getTask():
+    emptyReturn()
     return random.choice(list(taskMapping.keys()))
 
 def persNbr():
+    emptyReturn()
     string = ""
     length = 4
     nbr = random.randint(0, 2)
@@ -88,6 +99,7 @@ def Moms():
         return str(random.randint(0, 50)) + ' %'
     
 def travels():
+    emptyReturn()
     rand = random.randint(0,3)
     if rand == 0:
         return '0'

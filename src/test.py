@@ -120,13 +120,15 @@ def copyRow_exact(data, i):
     return row
 
 def validPlace(place):
+    if place == '':
+        return False
     for p in places:
         if place in p.aliases:
             return True
     return False
 
 def valid_row(row):
-    if (isinstance(row, int) or isinstance(row, str)) or str(row['Distrikt']).lower() == "nan":
+    if (isinstance(row, int) or isinstance(row, str)) or str(row['Distrikt']).lower() == "":
         return False
     if not validPlace(str(row['Distrikt']).lower()):
         return False
@@ -135,6 +137,8 @@ def valid_row(row):
     if str(row['Tjänst']).lower() not in taskMapping:
         return False
     if numberOfDigits(str(row['Pers.nr.'])) != 4 and numberOfDigits(str(row['Pers.nr.'])) != 6 and numberOfDigits(str(row['Pers.nr.'])) != 10 and str(row['Pers.nr.']).replace(" ", "").lower() != 'okänd':
+        return False
+    if numberOfDigits(str(row['Datum'] != 4)) or str(row['Datum']).lower() == '' or (str(row['Datum'])[5] == '0' and str(row['Datum'])[4] == '0'):
         return False
     return True
 
@@ -217,4 +221,4 @@ def iter_folder(folder_path, target_folder):
     return filesWithWrongFormat
 
 
-#iter_folder("/Users/victorpekkari/Documents/salg/created", "testcreatedA")
+iter_folder("/Users/victorpekkari/Documents/salg/created", "testcreatedB")

@@ -32,6 +32,13 @@ def get_datetime(df, i):
     minute = time[3:5]
     return datetime.datetime(year=int(year), month=int(month), day=int(day), hour=int(hour), minute=int(minute), second=0)
 
+def numberOfDigits(personnummer):
+    count = 0
+    for char in personnummer:
+        if char.isdigit():
+            count += 1
+    return count
+
 def half_hour_diff(df, timediff, index):
     dateA = get_datetime(df, index)
     dateB = get_datetime(df, index - 1)
@@ -94,6 +101,7 @@ def write(fileName, df, place):
     if place != 'misnamed': 
         for index in range(1, len(df)):
             if half_hour_diff(df, 30, index):
+                print(1)
                 df['Kostnad'].iloc[index] = rabatt       
 
     # Write the DataFrame data
@@ -112,7 +120,7 @@ def create_xls_file(file_path):
     open(file_path, 'w').close()
 
 def convert_date(date):
-    return str(date[4:]) + '/' + str(date[2:4]) + '-' + '20' + str(date[2:4])
+    return str(date[4:6]) + '/' + str(date[2:4]) + '-' + '20' + str(date[0:2])
 
 def delete_contents(file):
     wb = Workbook()
