@@ -11,6 +11,8 @@ The five places are: (Norrtälje, Södertälje, Syd, City, Nord)
 
 The program can be seen as a function (F) that takes in a file and updates or creates the 7 output files.
 
-	folder = [file_1, file_2, ..., file_N]
+	folder_input = [file_1, file_2, ..., file_N]
+	F(folder) = application
+	folder_output = [syd, nord, city, södertälje, norrtälje, misnamed, kvv]
 	
-	folder -> F(folder) -> create folder with 7 outputfiles...
+	folder_input -> F(folder) -> folder_ouput
