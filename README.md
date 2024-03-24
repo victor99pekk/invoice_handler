@@ -9,6 +9,8 @@ The five places are: (Norrtälje, Södertälje, Syd, City, Nord)
 
 - Nord includes Sollentuna, Solna, norrort, and Tegen.
 
+- City: Södermalm, Östermalm, Norrmalm
+
 The program can be seen as a function (F) that takes in a folder with files and ouputs a folder with 7 output files.
 
 	folder_input = [file_1, file_2, ..., file_N]
