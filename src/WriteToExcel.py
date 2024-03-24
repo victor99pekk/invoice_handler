@@ -101,14 +101,15 @@ def write(fileName, df, place):
     if place != 'misnamed': 
         for index in range(1, len(df)):
             if half_hour_diff(df, 30, index):
-                print(1)
                 df['Kostnad'].iloc[index] = rabatt       
 
     # Write the DataFrame data
     for i, row in enumerate(df.values):
         for j, value in enumerate(row):
-            if j == 0:
+            if j == 0 and place != 'misnamed':
                 value = convert_date(str(df['Datum'].iloc[i]))
+            elif j == 0:
+                value = str(df['Datum'].iloc[i])
             sheet.write(startWrite + i, j, value)  # Start writing data from the third row
 
     # Save the workbook to the file

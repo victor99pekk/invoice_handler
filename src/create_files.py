@@ -17,6 +17,7 @@ def createTime():
     length = 5
 
     char = random.choice([':', '.'])
+    #char = ':'
     string = ""
 
     if threeNbr == 0:
@@ -38,7 +39,8 @@ def createTime():
 
 def emptyReturn():
     if random.randint(0, 100) < 5:
-        return ''
+        return ''    
+
 
 def createDate():
     #emptyReturn()
@@ -50,6 +52,8 @@ def getDistrict():
     choice = random.choice(list(placeMapping.keys()))
     while choice == 'krim' or choice == 'kvv':
         choice = random.choice(list(placeMapping.keys()))
+    if choice == 'södertalje':
+        return 'södertälje'
     return choice
 
 def getTask():

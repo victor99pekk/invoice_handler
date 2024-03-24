@@ -13,7 +13,7 @@ class DragDropWidget(QWidget):
 
         # Set up the layout
         layout = QVBoxLayout()
-        font1 = QFont("Arial", 20)  # Set font family and size
+        self.font1 = QFont("Arial", 20)  # Set font family and size
         font2 = QFont("Arial", 15,)
         self.fontError = QFont("Arial", 13)
 
@@ -49,7 +49,7 @@ class DragDropWidget(QWidget):
         self.textBox.setAcceptDrops(True)
         self.textBox.setPlaceholderText("Namnge folder här:     (ex: Januari21)")
         self.textBox.setMaximumHeight(35)
-        self.textBox.setFont(font1)
+        self.textBox.setFont(self.font1)
         self.textBox.installEventFilter(self)
         self.textBox.setFocus()
 
@@ -62,7 +62,7 @@ class DragDropWidget(QWidget):
 
         self.text_field = QLineEdit()
         self.text_field.setReadOnly(True)
-        self.text_field.setFont(font1)
+        self.text_field.setFont(self.font1)
         self.text_field.setPlaceholderText("")
         self.text_field.setMaximumHeight(40)
         self.text_field.setMaximumWidth(220)

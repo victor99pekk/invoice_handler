@@ -5,6 +5,7 @@ import pandas as pd
 from Place import Place
 from WriteToExcel import *
 from Constants import *
+
 def start_row(df, list_of_names):
     for names in list_of_names:
         list = df.index[df.iloc[:, 0] == names].tolist()
@@ -36,20 +37,31 @@ def format_number(number_str):
 def is_valid_time_format(time):
     char = ['.', ':']
     if len(time) == 4 and numberOfDigits(time) == 4:
-        if time[0] < '2' and time[1] < '4' and time[2] < '6':
+        if int(time[0]) == 2 and int(time[1]) < 4 and int(time[2]) < 6:
             return True
-    elif len(time) == 5 and time[2] in char:
-        if time[0] < '2' and time[1] < '4' and time[3] < '6':
+        elif int(time[0]) < 2 and int(time[1]) <= 9 and int(time[2]) < 6:
+            return True        
+    elif numberOfDigits(time) == 4 and len(time) == 5 and str(time[2]) in char:
+        if int(time[0]) == 2 and int(time[1]) < 4 and int(time[3]) < 6:
+            return True
+        elif int(time[0]) < 2 and int(time[1]) <= 9 and int(time[3]) < 6:
+            return True
+    elif numberOfDigits(time) == 3 and len(time) == 4 and str(time[1]) in char:
+        if int(time[0]) <= 9 and int(time[2]) < 6 and int(time[3]) <= 9:
             return True
     return False
 
-    # Define a regular expression pattern for the format hh:mm
-    """ pattern = r'^([01]?[0-9]|2[0-3])' + re.escape(char) + r'[0-5][0-9]$'
-    print(re.match(pattern, time_str))
-    return re.match(pattern, time_str) == None """
-
 def valid_date(date_str):
-    return len(date_str) == 6 and date_str.isdigit()
+    if (numberOfDigits(date_str) != 6):
+        return False
+    if date_str.lower() == '':
+        return False
+    if date_str[5] == '0' and date_str[4] == '0':
+        return False
+    if date_str[2] == '0' and str(date_str)[3] == '0':
+        return False
+
+    return True
 
 def missing_first_digit(time_str):
     # Define a regular expression pattern for the format h:mm
@@ -67,13 +79,11 @@ def format_time(time_str):
     elif len(time_str) == 5: 
         return time_str[:2] + ':' + time_str[3:]
     
-def valid_time(time_str):
-    return is_valid_time_format(time_str)
     #return is_valid_time_format(time_str, ':') or is_valid_time_format(time_str, '.') or missing_first_digit(time_str) or numberOfDigits(time_str) == 4
 
 def numberOfDigits(personnummer):
     count = 0
-    for char in personnummer:
+    for char in str(personnummer):
         if char.isdigit():
             count += 1
     return count
@@ -132,13 +142,13 @@ def valid_row(row):
         return False
     if not validPlace(str(row['Distrikt']).lower()):
         return False
-    if not valid_time(str(row['Tid'])):
+    if not is_valid_time_format(str(row['Tid'])):
         return False
     if str(row['Tjänst']).lower() not in taskMapping:
         return False
     if numberOfDigits(str(row['Pers.nr.'])) != 4 and numberOfDigits(str(row['Pers.nr.'])) != 6 and numberOfDigits(str(row['Pers.nr.'])) != 10 and str(row['Pers.nr.']).replace(" ", "").lower() != 'okänd':
         return False
-    if numberOfDigits(str(row['Datum'] != 4)) or str(row['Datum']).lower() == '' or (str(row['Datum'])[5] == '0' and str(row['Datum'])[4] == '0'):
+    if not valid_date(str(row['Datum'])):
         return False
     return True
 
@@ -147,30 +157,29 @@ def valid_row(row):
 def fillMap(map, df, krim):
     for i in range(df.shape[0]):    #iterate map with regular places
         row = copyRow_exact(df, i)
+        misnamed = Place("misnamed", {"misnamed", "felnamn"})
         for place in map:
             site = str(row.loc['Distrikt']).lower()
 
             if site in place.aliases and not row.empty:
+                if place == södertälje:
+                    print(df.iloc[i])
                 if valid_row(df.iloc[i]):
-                    # map[place].loc[len(map[place].reset_index(drop=True))] = modifyRow(row)
                     map[place].loc[len(map[place].reset_index(drop=True))] = modifyRow(row)
-
                 else:
-                    p = Place("misnamed", {"misnamed", "felnamn"})
-                    map[p].loc[len(map[p])] = row
+                    map[misnamed].loc[len(map[misnamed].reset_index(drop=True))] = row
                 break
-    for i in range(krim.shape[0]):  #iterate map with krimvården
+    """ for i in range(krim.shape[0]):  #iterate map with krimvården
         row = copyRow_exact(krim, i)
         if not row.empty:
             p = Place("krim", ["kvv", "krim"])
             if valid_row(str(row.loc['Tjänst'])):
                 map[p].loc[len(map[p])] = modifyRow(row)
             else:
-                map[Place("misnamed", {"misnamed", "felnamn"})].loc[len(map[Place("misnamed", {"misnamed", "felnamn"})])] = row
-
+                map[misnamed].loc[len(map[misnamed])] = row """
     return map
 
-def createPlaces():  #manually create the places
+""" def createPlaces():  #manually create the places
     norrtalje = Place("norrtälje", {"norrtälje"})
     sodertalje = Place("södertälje", {"södertälje"})
     syd = Place("syd", {"syd", "flemingsberg", "nacka", "flempan", "söderort", "stockholm syd", "västberga"})
@@ -179,7 +188,7 @@ def createPlaces():  #manually create the places
     misnamed = Place("misnamed", {"misnamed", "felnamn"})
     nord = Place("nord", {"nord", "norrort","norrort", "nord", "solna"})
     return [norrtalje, sodertalje, syd, city, misnamed, krim, nord]
-
+ """
 def getDistrictData(name, map):
     for place in map:
         if name in place.aliases:
@@ -198,6 +207,7 @@ def run(path, map, runProgram):
     if not runProgram:
         return ""
     fillMap(map, data, krim)
+    print(map[södertälje])
     return ""
 
 def iter_folder(folder_path, target_folder):
@@ -215,10 +225,10 @@ def iter_folder(folder_path, target_folder):
                 filesWithWrongFormat.append(success)
                 runProgram = False
     #if runProgram:
-    for place in map:
+    for place in places:
         outputPath = target_folder + "/" + str(place)
         write(outputPath, map[place], place)
     return filesWithWrongFormat
 
 
-iter_folder("/Users/victorpekkari/Documents/salg/created", "testcreatedB")
+#iter_folder("/Users/victorpekkari/Documents/salg/created", "testcreatedC")
