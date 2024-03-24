@@ -52,7 +52,8 @@ def half_hour_diff(df, timediff, index):
 
 def write(fileName, df, place):
 
-    df.sort_values(by=['Datum', 'Tid'], inplace=True)
+    if place != 'misnamed':
+        df.sort_values(by=['Datum', 'Tid'], inplace=True)
 
     desktop = os.path.normpath(os.path.expanduser("~/Desktop"))
     file = desktop + path + fileName + file_format
@@ -73,6 +74,7 @@ def write(fileName, df, place):
     small_text = workbook.add_format({'font_size': 10})
     light_blue = workbook.add_format({'bg_color': '#ADD8E6', 'border': 1})
     header_light_blue = workbook.add_format({'bg_color': '#ADD8E6', 'border': 1, 'bold':True})
+    error_format = workbook.add_format({'bg_color': 'red', 'font_size': 14, 'bold':True, 'border': 1})
     black_borders = workbook.add_format({'border': 1})
 
     sheet.write(0, 0, fileName.split("/")[0], header_format)
@@ -110,11 +112,55 @@ def write(fileName, df, place):
                 value = convert_date(str(df['Datum'].iloc[i]))
             elif j == 0:
                 value = str(df['Datum'].iloc[i])
+            """ if place == 'misnamed' and not valid_cell(df.iloc[i], str(df.columns[j])):
+                sheet.write(startWrite + i, j, value, error_format) """
             sheet.write(startWrite + i, j, value)  # Start writing data from the third row
 
     # Save the workbook to the file
     workbook.close()
+def is_valid_time_format(time):
+    char = ['.', ':']
+    if len(time) == 4 and numberOfDigits(time) == 4:
+        if int(time[0]) == 2 and int(time[1]) < 4 and int(time[2]) < 6:
+            return True
+        elif int(time[0]) < 2 and int(time[1]) <= 9 and int(time[2]) < 6:
+            return True        
+    elif numberOfDigits(time) == 4 and len(time) == 5 and str(time[2]) in char:
+        if int(time[0]) == 2 and int(time[1]) < 4 and int(time[3]) < 6:
+            return True
+        elif int(time[0]) < 2 and int(time[1]) <= 9 and int(time[3]) < 6:
+            return True
+    elif numberOfDigits(time) == 3 and len(time) == 4 and str(time[1]) in char:
+        if int(time[0]) <= 9 and int(time[2]) < 6 and int(time[3]) <= 9:
+            return True
+    return False
 
+def valid_cell(row, cell):
+    if (isinstance(row, int) or isinstance(row, str)) or str(row['Distrikt']).lower() == "":
+        return False
+    if cell == 'Distrikt' and not str(row['Distrikt']).lower() in placeMapping:
+        return False
+    if cell == 'Tid' and not is_valid_time_format(str(row['Tid'])):
+        return False
+    if cell == 'Tjänst' and str(row['Tjänst']).lower() not in taskMapping:
+        return False
+    if cell == 'Pers.nr.' and numberOfDigits(str(row['Pers.nr.'])) != 4 and numberOfDigits(str(row['Pers.nr.'])) != 6 and numberOfDigits(str(row['Pers.nr.'])) != 10 and str(row['Pers.nr.']).replace(" ", "").lower() != 'okänd':
+        return False
+    if cell == 'Datum' and not valid_date(str(row['Datum'])):
+        return False
+    return True
+
+def valid_date(date_str):
+    if (numberOfDigits(date_str) != 6):
+        return False
+    if date_str.lower() == '':
+        return False
+    if date_str[5] == '0' and date_str[4] == '0':
+        return False
+    if date_str[2] == '0' and str(date_str)[3] == '0':
+        return False
+
+    return True
 
 def create_xls_file(file_path):
     # Create an empty file

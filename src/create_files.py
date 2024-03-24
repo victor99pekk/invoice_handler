@@ -43,8 +43,6 @@ def emptyReturn():
 
 
 def createDate():
-    #emptyReturn()
-    #return '23' + '03' + str(random.randint(0, 1)) + str(random.randint(1, 9))
     return '23' + '03' + str(random.randint(0, 2)) + str(random.randint(0, 9))
 
 def getDistrict():
@@ -185,7 +183,8 @@ def write(fileName):
     for i in range(input_start_row+1, 200):
         for j in range(len(required_columns)-1):
             col = required_columns[j]
-            sheet.write(i, j, boxValueNbr(j))   
+            string = boxValue(j)
+            sheet.write(i, j, string)   
             #sheet.write(i, j, boxValue(str(required_columns[j])).replace(' ', '').lower().capitalize())   
 
     # Save the workbook to the file

@@ -6,7 +6,7 @@ syd = Place("syd", {"syd", "flemingsberg", "nacka", "flempan", "söderort", "sto
 city = Place("city", {"city", "norrmalm", "söder", "kungsholmen", "vasastan", "östermalm", "city", "stockholm city", "stockholm", "söder", "södermalm", "söderort"})
 krim = Place("krim", {"krim", "kvv"})
 misnamed = Place("misnamed", {"misnamed", "felnamn"})
-nord = Place("nord", {"nord", "norrort","norrort", "nord", "solna"})
+nord = Place("nord", {"nord", "norrort","norrort", "nord", "solna", "norrort"})
 places = [norrtälje, södertälje, syd, city, misnamed, krim, nord]
 
 # -------------------
@@ -86,6 +86,7 @@ price_place_task = {
 rabatt = '1200 kr (rabatt)'
 
 placeMapping = {
+    'norrort': 'nord',
     'sodertalje': 'södertälje',
     'södertalje': 'södertälje',
     'sodertälje': 'södertälje',

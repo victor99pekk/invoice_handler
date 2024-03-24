@@ -1,6 +1,5 @@
 import os
 import re
-import time
 import pandas as pd
 from Place import Place
 from WriteToExcel import *
@@ -112,13 +111,28 @@ def modifyRow(row):
     district = placeMapping[row['Distrikt'].lower()].lower()
     op = taskMapping[row['Tjänst'].lower()]
     row['Kostnad'] = str(price_place_task[district][op]).replace(" ", "")
+    #row['Kostnad'] = fixNbr(getCost('Kostnad', district, op, row), ' kr')
     row['Resor (kostnad)'] = fixNbr(str(row['Resor (kostnad)']), ' kr')
+    #row['Resor (kostnad)'] = fixNbr(getCost('Resor (kostnad)', district, op, row), ' kr')
+    #row['Resor (km)'] = getDistance(row, 'Resor (km)')
     row['Resor (km)'] = fixNbr(str(row['Resor (km)']), ' km')
     
     if row['Kostnad'] != '?':
         row['Kostnad'] = str(row['Kostnad']) + ' kr'
     addTime(row)
     return row
+def getDistance(row, col):
+    if row[col] == '':
+        return ''
+    else:return fixNbr(str(row[col]), ' km')
+
+def getCost(col, district, op, row):
+    if row[col] == '':
+        return ''
+    elif row[col] == '?':
+        return '?'
+    else:
+        return str(price_place_task[district][op]).replace(" ", "")
 
 def addTime(row):
     if row['Tjänst'] == 'Blod':
@@ -158,17 +172,19 @@ def fillMap(map, df, krim):
     for i in range(df.shape[0]):    #iterate map with regular places
         row = copyRow_exact(df, i)
         misnamed = Place("misnamed", {"misnamed", "felnamn"})
+        added = False
         for place in map:
             site = str(row.loc['Distrikt']).lower()
-
-            if site in place.aliases and not row.empty:
-                if place == södertälje:
-                    print(df.iloc[i])
-                if valid_row(df.iloc[i]):
+            if site in place.aliases:
+                if valid_row(df.iloc[i]) and not row.empty:
+                    added = True
                     map[place].loc[len(map[place].reset_index(drop=True))] = modifyRow(row)
                 else:
+                    added = True
                     map[misnamed].loc[len(map[misnamed].reset_index(drop=True))] = row
                 break
+        if not added:
+            map[misnamed].loc[len(map[misnamed].reset_index(drop=True))] = row
     """ for i in range(krim.shape[0]):  #iterate map with krimvården
         row = copyRow_exact(krim, i)
         if not row.empty:
@@ -179,16 +195,6 @@ def fillMap(map, df, krim):
                 map[misnamed].loc[len(map[misnamed])] = row """
     return map
 
-""" def createPlaces():  #manually create the places
-    norrtalje = Place("norrtälje", {"norrtälje"})
-    sodertalje = Place("södertälje", {"södertälje"})
-    syd = Place("syd", {"syd", "flemingsberg", "nacka", "flempan", "söderort", "stockholm syd", "västberga"})
-    city = Place("city", {"city", "norrmalm", "söder", "kungsholmen", "vasastan", "östermalm", "city", "stockholm city", "stockholm", "söder", "södermalm", "söderort"})
-    krim = Place("krim", {"krim", "kvv"})
-    misnamed = Place("misnamed", {"misnamed", "felnamn"})
-    nord = Place("nord", {"nord", "norrort","norrort", "nord", "solna"})
-    return [norrtalje, sodertalje, syd, city, misnamed, krim, nord]
- """
 def getDistrictData(name, map):
     for place in map:
         if name in place.aliases:
@@ -207,7 +213,6 @@ def run(path, map, runProgram):
     if not runProgram:
         return ""
     fillMap(map, data, krim)
-    print(map[södertälje])
     return ""
 
 def iter_folder(folder_path, target_folder):
@@ -219,7 +224,7 @@ def iter_folder(folder_path, target_folder):
 
     for filename in os.listdir(folder_path):
         file_path = os.path.join(folder_path, filename)
-        if os.path.isfile(file_path) and filename.endswith('.xls'):
+        if os.path.isfile(file_path) and (filename.endswith('.xls') or filename.endswith('.xlsx')):
             success = run(file_path, map, runProgram)
             if success != "":
                 filesWithWrongFormat.append(success)
@@ -231,4 +236,4 @@ def iter_folder(folder_path, target_folder):
     return filesWithWrongFormat
 
 
-#iter_folder("/Users/victorpekkari/Documents/salg/created", "testcreatedC")
+#iter_folder("/Users/victorpekkari/Desktop/untitled folder 2", "levin")
