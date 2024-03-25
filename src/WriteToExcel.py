@@ -112,9 +112,10 @@ def write(fileName, df, place):
                 value = convert_date(str(df['Datum'].iloc[i]))
             elif j == 0:
                 value = str(df['Datum'].iloc[i])
-            """ if place == 'misnamed' and not valid_cell(df.iloc[i], str(df.columns[j])):
-                sheet.write(startWrite + i, j, value, error_format) """
-            sheet.write(startWrite + i, j, value)  # Start writing data from the third row
+            if place == 'misnamed' and not valid_cell(df.iloc[i], str(df.columns[j])):
+                sheet.write(startWrite + i, j, value, error_format)
+            else:
+                sheet.write(startWrite + i, j, value)  # Start writing data from the third row
 
     # Save the workbook to the file
     workbook.close()

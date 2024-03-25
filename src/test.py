@@ -236,4 +236,4 @@ def iter_folder(folder_path, target_folder):
     return filesWithWrongFormat
 
 
-#iter_folder("/Users/victorpekkari/Desktop/untitled folder 2", "levin")
+iter_folder("/Users/victorpekkari/Documents/untitled folder", "levin")
