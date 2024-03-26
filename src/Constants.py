@@ -42,7 +42,7 @@ file_format = '.xls'
 
 # -------------------
 
-path_to_salg = '/Users/victorpekkari/Documents/salg'
+path_to_salg = '/Users/victorpekkari/Documents/salg_fakturor'
 
 # -------------------
 

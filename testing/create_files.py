@@ -4,6 +4,10 @@ import random
 from Constants import *
 import string
 
+letters = ['a', 'b', 'c', 'd', 'e', 'f', ',', '-', '?', '+', '+', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u']
+empty_odds = 1
+bigOdd = 100
+nbr_rows = 100
 
 def create_xls_file(file_path):
     # Create an empty file
@@ -38,38 +42,47 @@ def createTime():
     return string
 
 def emptyReturn():
-    if random.randint(0, 100) < 5:
+    if random.randint(0, bigOdd) < empty_odds:
         return ''    
 
 
 def createDate():
     return '23' + '03' + str(random.randint(0, 2)) + str(random.randint(0, 9))
 
-def getDistrict():
-    emptyReturn()
-    choice = random.choice(list(placeMapping.keys()))
+def getDistrict(map):
+    take = map
+    if random.randint(0, bigOdd) < empty_odds:  # 20% chance for an empty string or non-placeMapping string
+        if random.randint(0, 1) == 0:  # 50% chance for an empty string
+            return ""
+        else:
+            return random_string()
+    choice = random.choice(list(take.keys()))
     while choice == 'krim' or choice == 'kvv':
-        choice = random.choice(list(placeMapping.keys()))
+        choice = random.choice(list(take.keys()))
     if choice == 'södertalje':
-        return 'södertälje'
-    return choice
-
-def getTask():
-    emptyReturn()
-    return random.choice(list(taskMapping.keys()))
+        return 'Södertälje' if random.randint(0, 1) == 0 else 'södertälje'  # Randomly capitalize 'södertalje'
+    return choice.capitalize() if random.randint(0, 1) == 0 else choice  # Randomly capitalize the returned string
 
 def persNbr():
-    emptyReturn()
+    # Introduce randomness for "okänd", "xxx", or a random string
+    rand_num = random.randint(0, 100)
+    if rand_num < 5:  # 5% chance for "okänd"
+        return "okänd"
+    elif rand_num < 10:  # 5% chance for "xxx"
+        length = random.randint(1, 10)  # Vary length between 1 and 10 characters
+        return "x" * length
+    elif rand_num < empty_odds:  # 10% chance for an empty string
+        return ""
+
     string = ""
-    length = 4
-    nbr = random.randint(0, 2)
-    if nbr == 0:
-        return 'okänd'
-    elif nbr == 1:
-        length = 6
+    length = random.randint(4, 6)  # Randomize length between 4 and 6
     for i in range(length):
-        string += str(random.randint(0,9))
+        if random.randint(0, 10) < 2:  # 20% chance to add a non-numeric character
+            string += random.choice(letters)  # Add a random letter
+        else:
+            string += str(random.randint(0, 9))
     return string
+
 
 def random_string():
     length = random.randint(1, 12)
@@ -80,16 +93,26 @@ def random_string():
     return random_string
 
 def cost():
-    cost = str(random.randint(1000, 10000))
+    rand_num = random.randint(0, bigOdd)
+    if rand_num < empty_odds:  # 10% chance for an empty string
+        return ""
+    elif rand_num < empty_odds:  # 10% chance for a random string
+        return random_string()
+
+    cost_value = str(random.randint(1000, 10000))
     randomNbr = random.randint(0, 2)
     if randomNbr == 0:
-        return cost
+        return cost_value
     elif randomNbr == 1:
-        return cost + 'kr'
+        return cost_value + 'kr'
     else:
-        return cost + ' kr'
+        return cost_value + ' kr'
+
 
 def Moms():
+    rand_num = random.randint(0, bigOdd)
+    if rand_num < empty_odds:  # 10% chance for an empty string
+        return ""
     rand = random.randint(0, 3)
     if rand == 0:
         return str(random.random())[:4]
@@ -99,8 +122,11 @@ def Moms():
         return str(random.randint(0, 50)) + '%'
     if rand == 3:
         return str(random.randint(0, 50)) + ' %'
-    
+
 def travels():
+    rand_num = random.randint(0, bigOdd)
+    if rand_num < empty_odds:  # 10% chance for an empty string
+        return ""
     emptyReturn()
     rand = random.randint(0,3)
     if rand == 0:
@@ -112,25 +138,6 @@ def travels():
     elif rand == 3:
         return str(random.randint(1, 80)) + ' km'
 
-def boxValue(stringA):
-    if stringA == 'Datum':
-        return createDate()
-    elif stringA == 'Tjänst':
-        return getTask()
-    elif string == "Moms (resa)":
-        res = Moms()
-        return res
-    elif stringA == 'Resor(km)':
-        res = travels()
-        return res
-    elif stringA == 'Tid':
-        return createTime()
-    elif stringA == 'Distrikt':
-        return getDistrict()
-    elif stringA == 'Pers.nr.':
-        return persNbr()
-    elif stringA == 'Kostnad' or stringA == 'Momsbelopp' or stringA  == 'Resor(kostnad)':
-        return cost()
     
 def boxValueNbr(nbr):
     if nbr == 0:
@@ -138,10 +145,10 @@ def boxValueNbr(nbr):
     elif nbr == 1:
         return createTime()
     elif nbr == 2:
-        res = getDistrict()
+        res = getDistrict(placeMapping)
         return res
     elif nbr == 3:
-        res = getTask()
+        res = getDistrict(taskMapping)
         return res
     elif nbr == 4:
         return persNbr()
@@ -180,10 +187,11 @@ def write(fileName):
         sheet.write(input_start_row, j, col_name, yellow_format)
 
     # Write the DataFrame data
-    for i in range(input_start_row+1, 200):
+    for i in range(input_start_row+1, nbr_rows):
         for j in range(len(required_columns)-1):
-            col = required_columns[j]
-            string = boxValue(j)
+            if random.randint(0, 100) < empty_odds:
+                continue
+            string = boxValueNbr(j)
             sheet.write(i, j, string)   
             #sheet.write(i, j, boxValue(str(required_columns[j])).replace(' ', '').lower().capitalize())   
 
@@ -191,8 +199,9 @@ def write(fileName):
     workbook.close()
 
 def create_10_files():
-    for i in range(10):
+    for i in range(4):
         file = 'file' + str(i)
+        print(file)
         write(file, )
 create_10_files()
 

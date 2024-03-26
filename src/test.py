@@ -87,13 +87,17 @@ def numberOfDigits(personnummer):
             count += 1
     return count
 
+def extract_digits(personnummer):
+    digits_only = ''.join(filter(str.isdigit, personnummer))
+    return digits_only
+
 def personnummer(personnummer):
     if numberOfDigits(personnummer) == 4:
-        return 'xxxxxx-' + personnummer
+        return 'xxxxxx-' + extract_digits(str(personnummer))
     elif numberOfDigits(personnummer) == 6:
-        return personnummer + '-xxxx'
+        return extract_digits(str(personnummer)) + '-xxxx'
     elif numberOfDigits(personnummer) == 10:
-        return personnummer[0:6] + '-' + personnummer[6:]
+        return extract_digits(str(personnummer))[0:6] + '-' + extract_digits(str(personnummer))[6:]
     else:
         return 'okänd'
 
@@ -160,7 +164,7 @@ def valid_row(row):
         return False
     if str(row['Tjänst']).lower() not in taskMapping:
         return False
-    if numberOfDigits(str(row['Pers.nr.'])) != 4 and numberOfDigits(str(row['Pers.nr.'])) != 6 and numberOfDigits(str(row['Pers.nr.'])) != 10 and str(row['Pers.nr.']).replace(" ", "").lower() != 'okänd':
+    if numberOfDigits(str(row['Pers.nr.'])) != 4 and numberOfDigits(str(row['Pers.nr.'])) != 6 and numberOfDigits(str(row['Pers.nr.'])) != 10 and numberOfDigits(str(row['Pers.nr.'])) != 0:
         return False
     if not valid_date(str(row['Datum'])):
         return False
