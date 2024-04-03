@@ -6,7 +6,7 @@ import datetime
 
 def getPath(fileName):
     desktop = os.path.normpath(os.path.expanduser("~/Desktop"))
-    format = '.xls'
+    format = '.xlsx'
     file = desktop + path + fileName + format
     os.makedirs(os.path.dirname(file), exist_ok=True)
     return file

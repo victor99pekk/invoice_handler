@@ -51,6 +51,9 @@ def is_valid_time_format(time):
     return False
 
 def valid_date(date_str):
+
+    if float(date_str) < 1 and float(date_str) > 0:
+        return True
     if (numberOfDigits(date_str) != 6):
         return False
     if date_str.lower() == '':
@@ -70,6 +73,15 @@ def missing_first_digit(time_str):
     return re.match(patternA, time_str) or re.match(patternB, time_str)
     
 def format_time(time_str):
+
+    if float(time_str) < 1 and float(time_str) > 0:
+        hour = (24 * time_str) // 1
+        minute = (60 * time_str) // 1
+        if hour < 10:
+            hour = '0' + str(hour)
+        if minute < 10:
+            minute = '0' + str(minute)
+        return str(hour) + ':' + str(minute)
 
     if len(time_str) == 4 and numberOfDigits(time_str) == 4:
         return time_str[0:2] + ':' + time_str[2:]
