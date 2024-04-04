@@ -52,7 +52,7 @@ def is_valid_time_format(time):
 
 def valid_date(date_str):
 
-    if float(date_str) < 1 and float(date_str) > 0:
+    if len(str(date_str)) == 1 and numberOfDigits(str(date_str)) == 1 and float(date_str) < 1 and float(date_str) > 0:
         return True
     if (numberOfDigits(date_str) != 6):
         return False
@@ -132,6 +132,7 @@ def modifyRow(row):
     #row['Resor (kostnad)'] = fixNbr(getCost('Resor (kostnad)', district, op, row), ' kr')
     #row['Resor (km)'] = getDistance(row, 'Resor (km)')
     row['Resor (km)'] = fixNbr(str(row['Resor (km)']), ' km')
+    #row_to_append['']
     
     if row['Kostnad'] != '?':
         row['Kostnad'] = str(row['Kostnad']) + ' kr'
