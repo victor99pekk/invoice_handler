@@ -35,6 +35,8 @@ def format_number(number_str):
 
 def is_valid_time_format(time):
     char = ['.', ':']
+    if numberOfDigits(time) == 6 and ':' in str(time) and time[6] == '0' and time[7] == '0' and time[5] == time[2]:
+        return True
     if len(time) == 4 and numberOfDigits(time) == 4:
         if int(time[0]) == 2 and int(time[1]) < 4 and int(time[2]) < 6:
             return True
@@ -62,7 +64,6 @@ def valid_date(date_str):
         return False
     if date_str[2] == '0' and str(date_str)[3] == '0':
         return False
-
     return True
 
 def missing_first_digit(time_str):
@@ -74,14 +75,6 @@ def missing_first_digit(time_str):
     
 def format_time(time_str):
 
-    if float(time_str) < 1 and float(time_str) > 0:
-        hour = (24 * time_str) // 1
-        minute = (60 * time_str) // 1
-        if hour < 10:
-            hour = '0' + str(hour)
-        if minute < 10:
-            minute = '0' + str(minute)
-        return str(hour) + ':' + str(minute)
 
     if len(time_str) == 4 and numberOfDigits(time_str) == 4:
         return time_str[0:2] + ':' + time_str[2:]
@@ -89,6 +82,9 @@ def format_time(time_str):
         return '0' + time_str[0] + ':' + time_str[2:]
     elif len(time_str) == 5: 
         return time_str[:2] + ':' + time_str[3:]
+    
+    if numberOfDigits(time_str) != 4:
+        return time_str[:6]
     
     #return is_valid_time_format(time_str, ':') or is_valid_time_format(time_str, '.') or missing_first_digit(time_str) or numberOfDigits(time_str) == 4
 
@@ -133,11 +129,13 @@ def modifyRow(row):
     #row['Resor (km)'] = getDistance(row, 'Resor (km)')
     row['Resor (km)'] = fixNbr(str(row['Resor (km)']), ' km')
     #row_to_append['']
+    #row['Datum'] = check_date(str(row['Datum']))
     
     if row['Kostnad'] != '?':
         row['Kostnad'] = str(row['Kostnad']) + ' kr'
     addTime(row)
     return row
+
 def getDistance(row, col):
     if row[col] == '':
         return ''
@@ -253,4 +251,4 @@ def iter_folder(folder_path, target_folder):
     return filesWithWrongFormat
 
 
-#iter_folder("/Users/victorpekkari/Documents/untitled folder", "levin")
+#iter_folder("/Users/victorpekkari/Documents/salg_fakturor/created", "levin")

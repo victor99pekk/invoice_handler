@@ -103,7 +103,8 @@ def write(fileName, df, place):
     if place != 'misnamed': 
         for index in range(1, len(df)):
             if half_hour_diff(df, 30, index):
-                df['Kostnad'].iloc[index] = rabatt       
+                #df['Kostnad'].iloc[index] = rabatt
+                df.loc[index, 'Kostnad'] = rabatt
 
     # Write the DataFrame data
     for i, row in enumerate(df.values):
