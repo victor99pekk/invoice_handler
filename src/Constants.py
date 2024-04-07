@@ -12,7 +12,7 @@ places = [norrtälje, södertälje, syd, city, misnamed, krim, nord]
 # -------------------
 
 
-columns_to_keep = ['Datum','Tid', 'Distrikt', 'Tjänst', 'Pers.nr.','K-nummer', 'Resor (km)', 'Resor (kostnad)', 'Kostnad']
+columns_to_keep = ['Datum','Tid', 'Distrikt', 'Tjänst', 'Pers.nr.','K-nummer', 'Resor (km)', 'Resor (kostnad)', 'Kostnad', 'Läkare']
 
 # -------------------
 

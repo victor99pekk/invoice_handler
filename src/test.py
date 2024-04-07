@@ -21,6 +21,8 @@ def getDataFrames(path):
     data = df.iloc[start:].copy()
     data.rename(columns=df.iloc[start-1], inplace=True)
     data.dropna(subset=[data.columns[1]], inplace=True)
+    
+    #data[]
 
     krim = df.iloc[krimvard:].copy()
     krim.rename(columns=df.iloc[start-1], inplace=True)
