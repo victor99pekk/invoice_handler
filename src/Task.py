@@ -21,6 +21,7 @@ class Task:
         tasks['rättintyg'] = 'kroppsbesiktning+rättsintyg'
         tasks['kroppsbesiktning+rättsintyg'] = 'kroppsbesiktning+rättsintyg'
         tasks['kroppsbesiktning'] = 'kroppsbesiktning+rättsintyg'
+        tasks['jourläkare'] = 'Jourläkare'
         return tasks
     
     @staticmethod
