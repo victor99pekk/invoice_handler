@@ -22,6 +22,7 @@ def getDataFrames(path):
     data.dropna(subset=[data.columns[1]], inplace=True)
     
     data['Läkare'] = df.iloc[0,1]
+    #data['Momsbelopp (kr)'] = ''
 
     print(data)
 
@@ -101,11 +102,10 @@ def extract_digits(personnummer):
     return digits_only
 
 def personnummer(personnummer):
-    if numberOfDigits(personnummer) == 4:
-        return 'xxxxxx-' + extract_digits(str(personnummer))
-    elif numberOfDigits(personnummer) == 6:
-        return extract_digits(str(personnummer)) + '-xxxx'
-    elif numberOfDigits(personnummer) == 10:
+
+    if numberOfDigits(personnummer) == 6:
+        return extract_digits(str(personnummer))
+    elif numberOfDigits(personnummer) == 8:
         return extract_digits(str(personnummer))[0:6] + '-' + extract_digits(str(personnummer))[6:]
     else:
         return 'okänd'
@@ -118,14 +118,19 @@ def fixNbr(nbr, char):          # removes space " ", and all characters that are
 def modifyRow(row):
     row = row[columns_to_keep].copy()
     row['Distrikt'] = row['Distrikt'].lower().capitalize()
-    row['Tjänst'] = taskMapping[row['Tjänst'].lower()]
+    if contains_kvv(str(row['Distrikt']).lower()):
+        row['Tjänst'] = 'Jourläkare'
+        district = 'krim'
+    else:
+        row['Tjänst'] = taskMapping[row['Tjänst'].lower()]
+        district = placeMapping[row['Distrikt'].lower()].lower()
     row['Tid'] = format_time(str(row['Tid']))
-    row['Pers.nr.'] = personnummer(str(row['Pers.nr.']))
-    district = placeMapping[row['Distrikt'].lower()].lower()
+    #row['Pers.nr.'] = personnummer(str(row['Pers.nr.']))
     op = taskMapping[row['Tjänst'].lower()]
     row['Kostnad'] = str(price_place_task[district][op]).replace(" ", "")
     row['Resor (kostnad)'] = fixNbr(str(row['Resor (kostnad)']), ' kr')
     row['Resor (km)'] = fixNbr(str(row['Resor (km)']), ' km')
+    row['Momsbelopp (kr)'] = str(price_place_task[district][op] * 0.25).replace(" ", "")
     row['Datum'] = get_six_number_date(str(row['Datum']))
     row['Moms'] = '25 %'
     
@@ -173,7 +178,7 @@ def valid_place(place):
 def valid_row(row):
     if (isinstance(row, int) or isinstance(row, str)) or str(row['Distrikt']).lower() == "":
         return False
-    if not valid_place(str(row['Distrikt']).lower()):
+    if not valid_place(str(row['Distrikt']).lower()) and not contains_kvv(str(row['Distrikt']).lower()):
         return False
     if not valid_time(str(row['Tid'])):
         return False
@@ -185,6 +190,13 @@ def valid_row(row):
         return False
     return True
 
+def contains_kvv(s):
+    # Iterate through the string
+    for i in range(len(s) - 2):  # Stop 2 characters before the end
+        # Check if the current substring matches "lvv"
+        if s[i:i+3].lower() == "kvv":
+            return True
+    return False
 
 #8 col
 def sort_data_between_districts(map, df):
@@ -194,7 +206,15 @@ def sort_data_between_districts(map, df):
         added = False
         for place in map:
             site = str(row.loc['Distrikt']).lower()
-            if site in place.aliases:
+            if contains_kvv(site):
+                if valid_row(df.iloc[i]) and not row.empty:
+                    added = True
+                    map[krim].loc[len(map[krim].reset_index(drop=True))] = modifyRow(row)
+                else:
+                    added = True
+                    map[misnamed].loc[len(map[misnamed].reset_index(drop=True))] = row
+                break
+            elif site in place.aliases:
                 if valid_row(df.iloc[i]) and not row.empty:
                     added = True
                     map[place].loc[len(map[place].reset_index(drop=True))] = modifyRow(row)
@@ -243,11 +263,8 @@ def iterate_folders(folder_path, target_folder):
     #if runProgram:
     for place in places:
         outputPath = target_folder + "/" + str(place)
-        print(place)
-        print(map[place])
-        print()
         write(outputPath, map[place], place)
     return filesWithWrongFormat
 
 
-iterate_folders("/Users/victorpekkari/Documents/untitled folder", "testning")
+iterate_folders("/Users/victorpekkari/Downloads/test", "testar2")

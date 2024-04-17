@@ -1,7 +1,7 @@
 from openpyxl import Workbook
 import os
 import xlsxwriter as xlsx
-from Constants import *
+from Config import *
 import datetime
 
 def getPath(fileName):
@@ -77,7 +77,7 @@ def write(fileName, df, place):
     error_format = workbook.add_format({'bg_color': 'red', 'font_size': 14, 'bold':True, 'border': 1})
     black_borders = workbook.add_format({'border': 1})
 
-    sheet.write(0, 0, fileName.split("/")[0], header_format)
+    sheet.write(0, 0, str(place), header_format)
     sheet.write(0, 1, 'skapades: ' + str(datetime.date.today()), small_text)
 
     # Write column names to the first row
@@ -91,14 +91,21 @@ def write(fileName, df, place):
     sheet.write(startWrite-3, 0, 'Antal', header_light_blue)
     sheet.write(startWrite-2, 0, 'Pris', header_light_blue)
     
-    for j, task in enumerate(map.keys()):
-        sheet.write(startWrite-4, 1 + j, task, header_light_blue)
-        sheet.write(startWrite-3, 1 + j, map[task], light_blue)
-        price = price_place_task[place][task]
-        if str(price).isdigit():
-            sheet.write(startWrite-2, 1 + j, format_number(str(int(price) * int(map[task]))), light_blue)
-        else:
-            sheet.write(startWrite-2, 1 + j, price, light_blue)
+    if place == krim:
+        sheet.write(startWrite-4, 1, 'jourläkare', header_light_blue)
+        sheet.write(startWrite-3, 1, df.shape[0], header_light_blue)
+        sheet.write(startWrite-2, 1, df.shape[0] * int(price_place_task[place]['Jourläkare']), header_light_blue)
+    else:
+        for j, task in enumerate(map.keys()):
+            if task not in price_place_task[place]:
+                continue
+            sheet.write(startWrite-4, 1 + j, task, header_light_blue)
+            sheet.write(startWrite-3, 1 + j, map[task], light_blue)
+            price = price_place_task[place][task]
+            if str(price).isdigit():
+                sheet.write(startWrite-2, 1 + j, format_number(str(int(price) * int(map[task]))), light_blue)
+            else:
+                sheet.write(startWrite-2, 1 + j, price, light_blue)
 
     if place != 'misnamed': 
         for index in range(1, len(df)):
@@ -146,7 +153,7 @@ def valid_cell(row, cell):
         return False
     if cell == 'Tjänst' and str(row['Tjänst']).lower() not in taskMapping:
         return False
-    if cell == 'Pers.nr.' and numberOfDigits(str(row['Pers.nr.'])) != 4 and numberOfDigits(str(row['Pers.nr.'])) != 6 and numberOfDigits(str(row['Pers.nr.'])) != 10 and str(row['Pers.nr.']).replace(" ", "").lower() != 'okänd':
+    if cell == 'Pers.nr.' and numberOfDigits(str(row['Pers.nr.'])) != 8 and numberOfDigits(str(row['Pers.nr.'])) != 6 and numberOfDigits(str(row['Pers.nr.'])) != 10 and str(row['Pers.nr.']).replace(" ", "").lower() != 'okänd':
         return False
     if cell == 'Datum' and not valid_date(str(row['Datum'])):
         return False
@@ -155,6 +162,8 @@ def valid_cell(row, cell):
 def valid_date(date_str):
     if (numberOfDigits(date_str) != 6):
         return False
+    if (numberOfDigits(date_str) == 8) and date_str[0] == '2' and date_str[1] == '1':
+        date_str = date_str[2:]
     if date_str.lower() == '':
         return False
     if date_str[5] == '0' and date_str[4] == '0':
