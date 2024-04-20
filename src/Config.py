@@ -85,7 +85,7 @@ price_place_task = {
     'norrtälje':{'Jourläkare': 2000, 'Blod': 3000, 'Arrestvård': 3120, 'Död': 3240, 'Rape kit': 7200, 'Urinprov':1200, 'Utryckning utan uppdrag':1200, 'kroppsbesiktning+rättsintyg':2000},
 }
 
-rabatt = '1200 kr (rabatt)'
+rabatt = '1200'
 
 placeMapping = {
     'norrort': 'nord',

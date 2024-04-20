@@ -24,8 +24,6 @@ def getDataFrames(path):
     data['Läkare'] = df.iloc[0,1]
     #data['Momsbelopp (kr)'] = ''
 
-    print(data)
-
     return data
 
 def format_number(number_str):
@@ -54,12 +52,14 @@ def valid_time(time):
 
 def valid_date(date_str):
 
-    if len(date_str) > 8:
+    # if (numberOfDigits(date_str) > 8):
+    #     return False
+
+    if (numberOfDigits(date_str) != 8) and (numberOfDigits(date_str) != 6) or len(date_str) != numberOfDigits(date_str):
         return False
 
     if len(date_str) == 8 and str(date_str)[0] == '2' and str(date_str)[1] == '0':
         date_str = str(date_str)[2:]
-        print(date_str)
     if len(str(date_str)) == 1 and numberOfDigits(str(date_str)) == 1 and float(date_str) < 1 and float(date_str) > 0:
         return True
     if (numberOfDigits(date_str) != 6):
@@ -103,10 +103,14 @@ def extract_digits(personnummer):
 
 def personnummer(personnummer):
 
-    if numberOfDigits(personnummer) == 6:
-        return extract_digits(str(personnummer))
-    elif numberOfDigits(personnummer) == 8:
-        return extract_digits(str(personnummer))[0:6] + '-' + extract_digits(str(personnummer))[6:]
+    personnummer = extract_digits(personnummer)
+
+    if numberOfDigits(personnummer) == 6 or numberOfDigits(personnummer) == 8:
+        return personnummer
+    elif numberOfDigits(personnummer) == 12:
+        return personnummer[:8]
+    elif numberOfDigits(personnummer) == 10:
+        return personnummer[:6]
     else:
         return 'okänd'
 
@@ -117,15 +121,14 @@ def fixNbr(nbr, char):          # removes space " ", and all characters that are
 
 def modifyRow(row):
     row = row[columns_to_keep].copy()
-    row['Distrikt'] = row['Distrikt'].lower().capitalize()
+    row['Distrikt'] = row['Distrikt'].lower().capitalize().replace(" ", "")
     if contains_kvv(str(row['Distrikt']).lower()):
         row['Tjänst'] = 'Jourläkare'
         district = 'krim'
     else:
-        row['Tjänst'] = taskMapping[row['Tjänst'].lower()]
-        district = placeMapping[row['Distrikt'].lower()].lower()
-    row['Tid'] = format_time(str(row['Tid']))
-    #row['Pers.nr.'] = personnummer(str(row['Pers.nr.']))
+        row['Tjänst'] = taskMapping[row['Tjänst'].lower().replace(" ", "")]
+        district = placeMapping[row['Distrikt'].lower()].lower().replace(" ", "")
+    row['Tid'] = format_time(str(row['Tid'])).replace(" ", "")
     op = taskMapping[row['Tjänst'].lower()]
     row['Kostnad'] = str(price_place_task[district][op]).replace(" ", "")
     row['Resor (kostnad)'] = fixNbr(str(row['Resor (kostnad)']), ' kr')
@@ -133,11 +136,13 @@ def modifyRow(row):
     row['Momsbelopp (kr)'] = str(price_place_task[district][op] * 0.25).replace(" ", "")
     row['Datum'] = get_six_number_date(str(row['Datum']))
     row['Moms'] = '25 %'
+    row['Pers.nr.'] = personnummer(str(row['Pers.nr.']))
     
     if row['Kostnad'] != '?':
         row['Kostnad'] = str(row['Kostnad']) + ' kr'
     addTime(row)
     return row
+
 
 def get_six_number_date(date):
     if len(str(date)) == 8:
@@ -182,9 +187,9 @@ def valid_row(row):
         return False
     if not valid_time(str(row['Tid'])):
         return False
-    if str(row['Tjänst']).lower() not in taskMapping:
+    if str(row['Tjänst']).lower().replace(" ", "") not in taskMapping:
         return False
-    if numberOfDigits(str(row['Pers.nr.'])) != 4 and numberOfDigits(str(row['Pers.nr.'])) != 6 and numberOfDigits(str(row['Pers.nr.'])) != 10 and numberOfDigits(str(row['Pers.nr.'])) != 0 and numberOfDigits(str(row['Pers.nr.'])) != 8:
+    if numberOfDigits(str(row['Pers.nr.'])) != 4 and numberOfDigits(str(row['Pers.nr.'])) != 6 and numberOfDigits(str(row['Pers.nr.'])) != 10 and numberOfDigits(str(row['Pers.nr.'])) != 0 and numberOfDigits(str(row['Pers.nr.'])) != 8 and numberOfDigits(str(row['Pers.nr.'])) != 12:
         return False
     if not valid_date(str(row['Datum'])):
         return False
@@ -195,6 +200,9 @@ def contains_kvv(s):
     for i in range(len(s) - 2):  # Stop 2 characters before the end
         # Check if the current substring matches "lvv"
         if s[i:i+3].lower() == "kvv":
+            return True
+    for i in range(len(s) - 3):
+        if s[i:i+3].lower() == "krim":
             return True
     return False
 
@@ -263,8 +271,10 @@ def iterate_folders(folder_path, target_folder):
     #if runProgram:
     for place in places:
         outputPath = target_folder + "/" + str(place)
+        print(place)
+        print(map[place])
         write(outputPath, map[place], place)
     return filesWithWrongFormat
 
 
-iterate_folders("/Users/victorpekkari/Downloads/test", "testar2")
+iterate_folders("/Users/victorpekkari/Downloads/test", "testar11")
