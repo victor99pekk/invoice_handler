@@ -95,24 +95,34 @@ def write(fileName, df, place):
     if place != 'misnamed': 
         for index in range(1, len(df)):
             if half_hour_diff(df, 30, index):
-                df.loc[index, 'Kostnad'] = rabatt
+                df.loc[index, 'Kostnad'] = rabatt + ' kr'
                 discount_count += 1
+                print(df)
     
     if place == krim:
         sheet.write(startWrite-4, 1, 'jourläkare', header_light_blue)
         sheet.write(startWrite-3, 1, df.shape[0], header_light_blue)
-        sheet.write(startWrite-2, 1, df.shape[0] * int(price_place_task[place]['Jourläkare']), header_light_blue)
+        sheet.write(startWrite-2, 1, df.shape[0] * int(price_place_task[place]['Jourläkare']), header_light_blue)    
     else:
         for j, task in enumerate(map.keys()):
             if task not in price_place_task[place]:
                 continue
-            price = price_place_task[place][task]
-            sheet.write(startWrite-4, 1 + j, (task +'(Pris='+str(price)+'kr)'), header_light_blue)
-            sheet.write(startWrite-3, 1 + j, str(map[task]-discount_count)+',   r: '+str(discount_count), light_blue)
-            if str(price).isdigit():
-                sheet.write(startWrite-2, 1 + j, format_number( str((int(price) * (int(map[task])-discount_count)) + (discount_count* int(rabatt))) ), light_blue)
+            elif task == 'Blod':
+                price = price_place_task[place][task]
+                sheet.write(startWrite-4, 1 + j, (task +'(Pris='+str(price)+'kr)'), header_light_blue)
+                sheet.write(startWrite-3, 1 + j, str(map[task]-discount_count)+',   r: '+str(discount_count), light_blue)
+                if str(price).isdigit():
+                    sheet.write(startWrite-2, 1 + j, format_number( str((int(price) * (int(map[task])-discount_count)) + (discount_count* int(rabatt))) ), light_blue)
+                else:
+                    sheet.write(startWrite-2, 1 + j, price, light_blue)
             else:
-                sheet.write(startWrite-2, 1 + j, price, light_blue)
+                price = price_place_task[place][task]
+                sheet.write(startWrite-4, 1 + j, (task +'(Pris='+str(price)+'kr)'), header_light_blue)
+                sheet.write(startWrite-3, 1 + j, map[task], light_blue)
+                if str(price).isdigit():
+                    sheet.write(startWrite-2, 1 + j, format_number( str((int(price) * (int(map[task])))) ), light_blue)
+                else:
+                    sheet.write(startWrite-2, 1 + j, price, light_blue)
 
     # Write the DataFrame data
     for i, row in enumerate(df.values):

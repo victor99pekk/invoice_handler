@@ -19,11 +19,12 @@ def getDataFrames(path):
     # Create a new DataFrame without the first n rows
     data = df.iloc[start:].copy()
     data.rename(columns=df.iloc[start-1], inplace=True)
-    data.dropna(subset=[data.columns[1]], inplace=True)
+    print(data)
+    data.dropna(how='all', inplace=True)
     
     data['Läkare'] = df.iloc[0,1]
     #data['Momsbelopp (kr)'] = ''
-
+    print(data)
     return data
 
 def format_number(number_str):
@@ -210,25 +211,21 @@ def contains_kvv(s):
 def sort_data_between_districts(map, df):
     for i in range(df.shape[0]):    #iterate map with regular places
         row = copyRow_exact(df, i)
-        misnamed = Place("misnamed", {"misnamed", "felnamn"})
         added = False
+
+        if not valid_row(row) or row.empty:
+            map[misnamed].loc[len(map[misnamed].reset_index(drop=True))] = row
+            continue
+
         for place in map:
             site = str(row.loc['Distrikt']).lower()
             if contains_kvv(site):
-                if valid_row(df.iloc[i]) and not row.empty:
-                    added = True
-                    map[krim].loc[len(map[krim].reset_index(drop=True))] = modifyRow(row)
-                else:
-                    added = True
-                    map[misnamed].loc[len(map[misnamed].reset_index(drop=True))] = row
+                map[krim].loc[len(map[krim].reset_index(drop=True))] = modifyRow(row)
+                added = True
                 break
             elif site in place.aliases:
-                if valid_row(df.iloc[i]) and not row.empty:
-                    added = True
-                    map[place].loc[len(map[place].reset_index(drop=True))] = modifyRow(row)
-                else:
-                    added = True
-                    map[misnamed].loc[len(map[misnamed].reset_index(drop=True))] = row
+                map[place].loc[len(map[place].reset_index(drop=True))] = modifyRow(row)
+                added = True
                 break
         if not added:
             map[misnamed].loc[len(map[misnamed].reset_index(drop=True))] = row
@@ -277,4 +274,4 @@ def iterate_folders(folder_path, target_folder):
     return filesWithWrongFormat
 
 
-iterate_folders("/Users/victorpekkari/Downloads/test", "testar11")
+iterate_folders("/Users/victorpekkari/Downloads/test", "testar90")
