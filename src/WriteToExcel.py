@@ -172,7 +172,8 @@ def valid_cell(row, cell):
 
 def valid_date(date_str):
     if (numberOfDigits(date_str) != 6):
-        return False
+        if len(date_str) > 1 and (date_str[0] != '2' or date_str[1] != '1'):
+            return False
     if (numberOfDigits(date_str) == 8) and date_str[0] == '2' and date_str[1] == '1':
         date_str = date_str[2:]
     if date_str.lower() == '':

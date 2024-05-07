@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
-from test import iter_folder
+from SortFunctions import iterate_folders
 from PyQt5.QtCore import *
 import Place as Place
 
@@ -175,7 +175,7 @@ class DragDropWidget(QWidget):
             self.instruct.setPlaceholderText("Du glömde välja foldern med fakturor som ska sammanställas")
             self.text_field.setStyleSheet("background-color: red;")
         else:
-            list = iter_folder(self.inputPath, self.targetFolder)
+            list = iterate_folders(self.inputPath, self.targetFolder)
             if list:
                 message = "Felaktigt format på följande: \n"
                 for i in list:

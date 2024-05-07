@@ -127,8 +127,8 @@ def modifyRow(row):
         row['Tjänst'] = 'Jourläkare'
         district = 'krim'
     else:
-        row['Tjänst'] = taskMapping[row['Tjänst'].lower().replace(" ", "")]
-        district = placeMapping[row['Distrikt'].lower()].lower().replace(" ", "")
+        row['Tjänst'] = taskMapping[row['Tjänst'].lower().strip()]
+        district = placeMapping[row['Distrikt'].lower()].lower().strip()
     row['Tid'] = format_time(str(row['Tid'])).replace(" ", "")
     op = taskMapping[row['Tjänst'].lower()]
     row['Kostnad'] = str(price_place_task[district][op]).replace(" ", "")
@@ -188,7 +188,7 @@ def valid_row(row):
         return False
     if not valid_time(str(row['Tid'])):
         return False
-    if str(row['Tjänst']).lower().replace(" ", "") not in taskMapping:
+    if str(row['Tjänst']).lower().strip() not in taskMapping:
         return False
     if numberOfDigits(str(row['Pers.nr.'])) != 4 and numberOfDigits(str(row['Pers.nr.'])) != 6 and numberOfDigits(str(row['Pers.nr.'])) != 10 and numberOfDigits(str(row['Pers.nr.'])) != 0 and numberOfDigits(str(row['Pers.nr.'])) != 8 and numberOfDigits(str(row['Pers.nr.'])) != 12:
         return False
@@ -263,6 +263,7 @@ def iterate_folders(folder_path, target_folder):
         if os.path.isfile(file_path) and (filename.endswith('.xls') or filename.endswith('.xlsx')):
             success = run(file_path, map, runProgram)
             if success != "":
+                print("Wrong format: " + success)
                 filesWithWrongFormat.append(success)
                 runProgram = False
     #if runProgram:
@@ -274,4 +275,4 @@ def iterate_folders(folder_path, target_folder):
     return filesWithWrongFormat
 
 
-iterate_folders("/Users/victorpekkari/Downloads/test", "testar90")
+iterate_folders("/Users/victorpekkari/Desktop/fakturor1", "test_äkta1")
