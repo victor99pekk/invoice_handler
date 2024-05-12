@@ -128,13 +128,13 @@ def modifyRow(row):
     else:
         row['Tjänst'] = taskMapping[row['Tjänst'].lower().strip()]
         district = placeMapping[row['Distrikt'].lower()].lower().strip()
-    row['Tid'] = format_time(str(row['Tid'])).replace(" ", "")
+    # row['Tid'] = format_time(str(row['Tid'])).replace(" ", "")
     op = taskMapping[row['Tjänst'].lower()]
     row['Kostnad'] = str(price_place_task[district][op]).replace(" ", "")
     row['Resor (kostnad)'] = fixNbr(str(row['Resor (kostnad)']), ' kr')
     row['Resor (km)'] = fixNbr(str(row['Resor (km)']), ' km')
     row['Momsbelopp (kr)'] = str(price_place_task[district][op] * 0.25).replace(" ", "")
-    row['Datum'] = get_six_number_date(str(row['Datum']))
+    # row['Datum'] = get_six_number_date(str(row['Datum']))
     row['Moms'] = '25 %'
     row['Pers.nr.'] = personnummer(str(row['Pers.nr.']))
     
@@ -181,19 +181,28 @@ def valid_place(place):
     return False
 
 def valid_row(row):
+    valid = True
     if (isinstance(row, int) or isinstance(row, str)) or str(row['Distrikt']).lower() == "":
-        return False
+        valid = False
     if not valid_place(str(row['Distrikt']).lower()) and not contains_kvv(str(row['Distrikt']).lower()):
-        return False
+        valid = False
+
     if not valid_time(str(row['Tid'])):
-        return False
+        valid = False
+    else:
+        row['Tid'] = format_time(str(row['Tid'])).replace(" ", "")
+
     if str(row['Tjänst']).lower().strip() not in taskMapping:
-        return False
+        valid = False
     if numberOfDigits(str(row['Pers.nr.'])) != 4 and numberOfDigits(str(row['Pers.nr.'])) != 6 and numberOfDigits(str(row['Pers.nr.'])) != 10 and numberOfDigits(str(row['Pers.nr.'])) != 0 and numberOfDigits(str(row['Pers.nr.'])) != 8 and numberOfDigits(str(row['Pers.nr.'])) != 12:
-        return False
+        valid = False
+
     if not valid_date(str(row['Datum'])):
-        return False
-    return True
+        valid = False
+    else:
+        row['Datum'] = get_six_number_date(str(row['Datum']))
+
+    return valid
 
 def contains_kvv(s):
     # Iterate through the string
@@ -275,4 +284,4 @@ def iterate_folders(folder_path, target_folder):
     return filesWithWrongFormat
 
 
-iterate_folders("/Users/victorpekkari/Downloads/faktura_spec-2", "test_äkta4")
+iterate_folders("/Users/victorpekkari/Downloads/faktura_spec-2", "test_äkta5")
