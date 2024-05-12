@@ -23,7 +23,7 @@ def getDataFrames(path):
     
     data['Läkare'] = df.iloc[0,1]
     #data['Momsbelopp (kr)'] = ''
-    print(data)
+    # print(data)
     return data
 
 def format_number(number_str):
@@ -248,7 +248,7 @@ def sameColumns(col1):
     copiedArray = [s.strip().lower() if isinstance(s, str) else s for s in col1]
     for column in must_have_columns:
         if column.lower() not in copiedArray:
-            print("Missing column: " + column)
+            # print("Missing column: " + column)
             return False
     return True
 
@@ -278,10 +278,10 @@ def iterate_folders(folder_path, target_folder):
     #if runProgram:
     for place in places:
         outputPath = target_folder + "/" + str(place)
-        print(place)
-        print(map[place])
+        # print(place)
+        # print(map[place])
         write(outputPath, map[place], place)
     return filesWithWrongFormat
 
 
-iterate_folders("/Users/victorpekkari/Downloads/faktura_spec-2", "test_äkta5")
+# iterate_folders("/Users/victorpekkari/Downloads/faktura_spec-2", "test_äkta5")
