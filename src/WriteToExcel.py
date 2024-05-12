@@ -97,7 +97,6 @@ def write(fileName, df, place):
             if half_hour_diff(df, 30, index):
                 df.loc[index, 'Kostnad'] = rabatt + ' kr'
                 discount_count += 1
-                print(df)
     
     if place == krim:
         sheet.write(startWrite-4, 1, 'jourläkare', header_light_blue)

@@ -19,7 +19,6 @@ def getDataFrames(path):
     # Create a new DataFrame without the first n rows
     data = df.iloc[start:].copy()
     data.rename(columns=df.iloc[start-1], inplace=True)
-    print(data)
     data.dropna(how='all', inplace=True)
     
     data['Läkare'] = df.iloc[0,1]
@@ -236,15 +235,17 @@ def getDistrictData(name, map):
         if name in place.aliases:
             return map[place]
 
-def sameColumns(col1, col2):
-    for i in range(len(col1)-2):
-        if col1[i] != col2[i]:
+def sameColumns(col1):
+    copiedArray = [s.strip().lower() if isinstance(s, str) else s for s in col1]
+    for column in must_have_columns:
+        if column.lower() not in copiedArray:
+            print("Missing column: " + column)
             return False
     return True
 
 def run(path, map, runProgram):
     data = getDataFrames(path)
-    if not sameColumns(data.columns, required_columns):
+    if not sameColumns(data.columns):
         return path.split("/")[-1]
     if not runProgram:
         return ""
@@ -263,9 +264,8 @@ def iterate_folders(folder_path, target_folder):
         if os.path.isfile(file_path) and (filename.endswith('.xls') or filename.endswith('.xlsx')):
             success = run(file_path, map, runProgram)
             if success != "":
-                print("Wrong format: " + success)
                 filesWithWrongFormat.append(success)
-                runProgram = False
+                #runProgram = False
     #if runProgram:
     for place in places:
         outputPath = target_folder + "/" + str(place)
@@ -275,4 +275,4 @@ def iterate_folders(folder_path, target_folder):
     return filesWithWrongFormat
 
 
-iterate_folders("/Users/victorpekkari/Desktop/fakturor1", "test_äkta1")
+iterate_folders("/Users/victorpekkari/Downloads/faktura_spec-2", "test_äkta4")

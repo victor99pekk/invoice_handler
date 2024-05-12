@@ -6,7 +6,7 @@ syd = Place("syd", {"syd", "flemingsberg", "nacka", "flempan", "söderort", "sto
 city = Place("city", {"city", "norrmalm", "söder", "kungsholmen", "vasastan", "östermalm", "city", "stockholm city", "stockholm", "söder", "södermalm", "söderort"})
 krim = Place("krim", {"krim", "kvv"})
 misnamed = Place("misnamed", {"misnamed", "felnamn"})
-nord = Place("nord", {"nord", "norrort","norrort", "nord", "solna", "norrort"})
+nord = Place("nord", {"arlanda", "nord", "norrort","norrort", "nord", "solna", "norrort"})
 places = [norrtälje, södertälje, syd, city, misnamed, krim, nord]
 
 # -------------------
@@ -19,6 +19,8 @@ columns_to_keep = ['Datum','Tid', 'Distrikt', 'Tjänst', 'Pers.nr.','K-nummer', 
 required_columns = ['Datum','Tid','Distrikt','Tjänst','Pers.nr.','K-nummer',
                     'Kostnad','Moms','Momsbelopp','Resor (km)','Resor (kostnad)',
                     'Moms (resa)', 'None']
+
+must_have_columns = ['Datum','Tid','Distrikt','Tjänst','Pers.nr.','K-nummer']
 
 # -------------------
 
@@ -88,6 +90,7 @@ price_place_task = {
 rabatt = '1200'
 
 placeMapping = {
+    'arlanda': 'nord',
     'norrort': 'nord',
     'sodertalje': 'södertälje',
     'södertalje': 'södertälje',
