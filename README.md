@@ -1,5 +1,5 @@
 # invoice_handler
-- Invoice handler for "stockholm akut-läkargrupp" Stockholm emergency physicians. The program combines and sorts invoices in excel format using python
+- Invoice handler for "stockholm akut-läkargrupp" Stockholm emergency physicians. The program combines and sorts invoices in excel format using python, pandas and libraries used to handle excel files.
 
 This is a program used to compile a folder with 7 different output-files (.xlsx), from an input-folder with an arbitrary amount of input files (.xls/xlsx). 
 
