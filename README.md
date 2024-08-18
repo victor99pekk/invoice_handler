@@ -19,6 +19,8 @@ Every row represents a patient visit. It is these patient visits that are to be 
 
 ### Misnamed rows (output)
 `misnamed rows` are rows occurr when the input data is not structured as expected. This could be due to a misspelling of a district/type-of-service name, or a district/type-of-service name that is not recognized. Or invalid date/time formats.
+
+The values that must be correct for a row not be put in misnamed are: `District`, `Type-of-Service` and `date`. other columns are allowed to be misspelled or empty. Empty cells are shown as `#NUM!` in the output file.
 ![](images/misnamed_example.png)
 
 ### Dropped rows (output)
