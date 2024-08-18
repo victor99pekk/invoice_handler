@@ -50,4 +50,38 @@ The program can be seen as a function (F) that takes the input-folder of files (
 	
 	F(input_folder) = folder_ouput
 
+## User interface
+<div style="display: flex; align-items: center; justify-content: space-between;">
+    <div style="flex: 1;">
+        The program is designed to be used by people with no programming experience. The user interface is a simple GUI that allows the user to select the input-folder and output-folder. The interface contain simple instructions on how to use the program in swedish. The instructions and other features of the gui change along the way to make it possible for a first time user to use the program without any prior knowledge.
+    </div>
+    <div style="flex: 0 0 auto; margin-left: 20px;">
+        <img src="images/gui.png" alt="User Interface" style="width: 200px; height: auto;">
+    </div>
+</div>
 
+
+## 2 GUI reactions
+(translation in red)
+
+### Failed run
+<div style="display: flex; align-items: flex-start; justify-content: space-between;">
+    <div style="flex: 1;">
+        chosen input folder correctly, but forgotten to name the output folder. The program will give an error message and ask the user to name the output-folder.
+    </div>
+    <div style="flex: 0 0 auto; margin-left: 20px;">
+        <img src="images/failed_run.png" alt="Failed Run" style="width: 200px; height: auto;">
+    </div>
+</div>
+
+### Successful run
+<div style="display: flex; align-items: flex-start; justify-content: space-between;">
+    <div style="flex: 1;">
+        The program has successfully sorted the input files and saved the output files in the output folder. The user is given a message that the program has finished and where it is possible to find the output files.
+    </div>
+    <div style="flex: 0 0 auto; margin-left: 20px;">
+        <img src="images/success_run.png" alt="Successful Run" style="width: 200px; height: auto;">
+    </div>
+</div>
+
+the gui does also let you know if you've put in files that have to incorrect format (not .xls/.xlsx) and more.
