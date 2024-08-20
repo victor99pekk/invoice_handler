@@ -6,6 +6,7 @@ class File:
         self.path = path
         self.droped_values = pd.DataFrame()
         self.dataframe, self.droped_values = self.get_dataframe()
+        self.start = 0
 
     def start_row(self, df, list_of_names):
         for names in list_of_names:
@@ -17,13 +18,16 @@ class File:
     def get_dataframe(self):
         df = pd.read_excel(self.path)
 
-        start = self.start_row(df, ["Datum"])    # Find the row where the data starts
+        self.start = self.start_row(df, ["Datum"])    # Find the row where the data starts
         # Create a new DataFrame without the first n rows
-        data = df.iloc[start:].copy()
-        data.rename(columns=df.iloc[start-1], inplace=True)
+        data = df.iloc[self.start:].copy()
+        data.rename(columns=df.iloc[self.start-1], inplace=True)
         data.dropna(how='all', inplace=True)
 
         dropped_rows = data[data[['Distrikt', 'Tjänst']].isna().any(axis=1)].copy()
+        dropped_rows['RowNumber'] = data[data[['Distrikt', 'Tjänst']].isna().any(axis=1)].index + 2
+        dropped_rows['filename'] = self.path.split("/")[-1]
+
 
         data.dropna(subset=['Distrikt', 'Tjänst'], inplace=True)
         
@@ -46,4 +50,7 @@ class File:
                     added = True
                     break
             if not added:
-                place_list[-1].add_data(row.data)
+                droped_row = row.data.copy() 
+                droped_row['RowNumber'] = self.start + i
+                droped_row['filename'] = self.path.split("/")[-1]
+                place_list[-1].add_data(droped_row)

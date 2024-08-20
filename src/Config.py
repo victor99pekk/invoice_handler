@@ -9,6 +9,10 @@ columns_to_keep = ['Datum','Tid', 'Distrikt', 'Tjänst', 'Pers.nr.','K-nummer', 
 
 # -------------------
 
+dropped_columns = ['Datum','Tid', 'Distrikt', 'Tjänst', 'Pers.nr.','K-nummer', 'Moms', 'Resor (km)', 'Resor (kostnad)', 'Kostnad', 'Läkare', 'RowNumber', 'filename']
+
+# -------------------
+
 must_have_columns = ['Datum','Tid','Distrikt','Tjänst','Pers.nr.','K-nummer']
 
 # -------------------

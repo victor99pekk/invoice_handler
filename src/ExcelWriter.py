@@ -1,3 +1,4 @@
+import math
 import os
 import xlsxwriter as xlsx
 from Config import *
@@ -68,6 +69,11 @@ class Writer(ABC):
 
         return correct_timeDiff and correct_task and correct_district
     
+    def write_nan(self, worksheet, row_idx, col_idx, value, format=None):
+        if isinstance(value, float) and (math.isnan(value) or math.isinf(value)):
+            value = ''
+        worksheet.write(row_idx, col_idx, value, format)
+    
     @abstractmethod
     def write(self):
         pass
@@ -92,27 +98,32 @@ class DropWriter(Writer):
         small_text = workbook.add_format(small_text_format)
         error = workbook.add_format(error_format)
 
-        sheet.write(0, 0, str(place.name.capitalize()), header)
-        sheet.write(0, 1, 'skapades: ' + str(datetime.date.today()), small_text)
+        # sheet.write(0, 0, str(place.name.capitalize()), header)
+        # sheet.write(0, 1, 'skapades: ' + str(datetime.date.today()), small_text)
+        self.write_nan(sheet, 0, 0, str(place.name.capitalize()), header)
+        self.write_nan(sheet, 0, 1, 'skapades: ' + str(datetime.date.today()), small_text)
 
         # Write column names to the first row
         for j, col_name in enumerate(df.columns):
-            #if j == 0 or j == len(df.columns) - 1:  # First and last columns    
-            sheet.write(startWrite-1, j, col_name, yellow)
+            # sheet.write(startWrite-1, j, col_name, yellow)
+            self.write_nan(sheet, startWrite-1, j, col_name, yellow)
 
         # Write the DataFrame data
         for i, row in enumerate(df.values):
             row_ = Row(df.iloc[i])
-            for j, value in enumerate(row):
+            for j, value in enumerate(row_.data):
                 if j == 0:
                     value = str(df['Datum'].iloc[i])
                 # else:
-                sheet.write(startWrite + i, j, value)  # Start writing data from the third row
+                # sheet.write(startWrite + i, j, value)  # Start writing data from the third row
+                self.write_nan(sheet, startWrite + i, j, value)
                 
                 if df.columns[j] == 'Tid' and not pd.isna(df.columns[j]):
-                    sheet.write(startWrite + i, j, value)
+                    # sheet.write(startWrite + i, j, value)
+                    self.write_nan(sheet, startWrite + i, j, value)
                 elif df.columns[j] == 'Tid':
-                    sheet.write(startWrite + i, j, "  --  ")
+                    # sheet.write(startWrite + i, j, "  --  ")
+                    self.write_nan(sheet, startWrite + i, j, "  --  ", error)
 
         # Save the workbook to the file
         workbook.close()
@@ -137,13 +148,16 @@ class ErrorWriter(Writer):
         small_text = workbook.add_format(small_text_format)
         error = workbook.add_format(error_format)
 
-        sheet.write(0, 0, str(place.name.capitalize()), header)
-        sheet.write(0, 1, 'skapades: ' + str(datetime.date.today()), small_text)
+        # sheet.write(0, 0, str(place.name.capitalize()), header)
+        # sheet.write(0, 1, 'skapades: ' + str(datetime.date.today()), small_text)
+        self.write_nan(sheet, 0, 0, str(place.name.capitalize()), header)
+        self.write_nan(sheet, 0, 1, 'skapades: ' + str(datetime.date.today()), small_text)
 
         # Write column names to the first row
         for j, col_name in enumerate(df.columns):
             #if j == 0 or j == len(df.columns) - 1:  # First and last columns    
-            sheet.write(startWrite-1, j, col_name, yellow)
+            # sheet.write(startWrite-1, j, col_name, yellow)
+            self.write_nan(sheet, startWrite-1, j, col_name, yellow)
         
         # Write the DataFrame data
         for i, row in enumerate(df.values):
@@ -152,14 +166,18 @@ class ErrorWriter(Writer):
                 if j == 0:
                     value = str(df['Datum'].iloc[i])
                 if str(df.columns[j]) in row_.bool_mapping and (not row_.bool_mapping[str(df.columns[j])]):
-                    sheet.write(startWrite + i, j, value, error)
+                    # sheet.write(startWrite + i, j, value, error)
+                    self.write_nan(sheet, startWrite + i, j, value, error)
                 else:
-                    sheet.write(startWrite + i, j, value)  # Start writing data from the third row
+                    # sheet.write(startWrite + i, j, value)  # Start writing data from the third row
+                    self.write_nan(sheet, startWrite + i, j, value)
                 
                 if df.columns[j] == 'Tid' and not pd.isna(df.columns[j]):
-                    sheet.write(startWrite + i, j, value)
+                    # sheet.write(startWrite + i, j, value)
+                    self.write_nan(sheet, startWrite + i, j, value)
                 elif df.columns[j] == 'Tid':
-                    sheet.write(startWrite + i, j, "  --  ", error)
+                    # sheet.write(startWrite + i, j, "  --  ", error)
+                    self.write_nan(sheet, startWrite + i, j, "  --  ", error)
 
         # Save the workbook to the file
         workbook.close()
@@ -185,21 +203,26 @@ class ExcelWriter(Writer):
         header_light_blue = workbook.add_format(header_light_blue_format)
 
         # write name of the district to the top right corner of excel file
-        sheet.write(0, 0, str(place.name.capitalize()), header)
-        sheet.write(0, 1, 'skapades: ' + str(datetime.date.today()), small_text)
+        # sheet.write(0, 0, str(place.name.capitalize()), header)
+        # sheet.write(0, 1, 'skapades: ' + str(datetime.date.today()), small_text)
+        self.write_nan(sheet, 0, 0, str(place.name.capitalize()), header)
+        self.write_nan(sheet, 0, 1, 'skapades: ' + str(datetime.date.today()), small_text)
 
 
         # start writing the rows to the excel file
         
         # Write column names to the first row
         for j, col_name in enumerate(place.dataframe.columns):
-            sheet.write(startWrite-1, j, col_name, yellow)
+            # sheet.write(startWrite-1, j, col_name, yellow)
+            self.write_nan(sheet, startWrite-1, j, col_name, yellow)
 
 
         # Write occurrences of the different tasks
          # Write the occurences of the different tasks
-        sheet.write(startWrite-3, 0, 'Antal', header_light_blue)
-        sheet.write(startWrite-2, 0, 'Totalt Pris', header_light_blue)
+        # sheet.write(startWrite-3, 0, 'Antal', header_light_blue)
+        # sheet.write(startWrite-2, 0, 'Totalt Pris', header_light_blue)
+        self.write_nan(sheet, startWrite-4, 0, 'Datum', header_light_blue)
+        self.write_nan(sheet, startWrite-4, 1, 'Tjänst', header_light_blue)
 
         discount_count = 0
         map = place.job_occurence
@@ -214,17 +237,26 @@ class ExcelWriter(Writer):
                 price = int(place.dataframe.iloc[j]['Kostnad'])
             if str.isdigit(str(price)):
                 if task == 'Blod':
-                    sheet.write(startWrite-4, 1 + j, (task +'(Pris='+str(price)+'kr)'), header_light_blue)
-                    sheet.write(startWrite-3, 1 + j, str(map.get(task, 0)-discount_count)+',   r: '+str(discount_count), light_blue)
-                    sheet.write(startWrite-2, 1 + j, self.format_number( str((int(price) * (int(map.get(task, 0))-discount_count)) + (discount_count* int(rabatt))) ), light_blue)
+                    # sheet.write(startWrite-4, 1 + j, (task +'(Pris='+str(price)+'kr)'), header_light_blue)
+                    # sheet.write(startWrite-3, 1 + j, str(map.get(task, 0)-discount_count)+',   r: '+str(discount_count), light_blue)
+                    # sheet.write(startWrite-2, 1 + j, self.format_number( str((int(price) * (int(map.get(task, 0))-discount_count)) + (discount_count* int(rabatt))) ), light_blue)
+                    self.write_nan(sheet, startWrite-4, 1 + j, (task +'(Pris='+str(price)+'kr)'), header_light_blue)
+                    self.write_nan(sheet, startWrite-3, 1 + j, str(map.get(task, 0)-discount_count)+',   r: '+str(discount_count), light_blue)
+                    self.write_nan(sheet, startWrite-2, 1 + j, self.format_number( str((int(price) * (int(map.get(task, 0))-discount_count)) + (discount_count* int(rabatt)))) , light_blue)
                 else:
-                    sheet.write(startWrite-4, 1 + j, (task +'(Pris='+str(price)+'kr)'), header_light_blue)
-                    sheet.write(startWrite-3, 1 + j, map.get(task, 0), light_blue)
-                    sheet.write(startWrite-2, 1 + j, self.format_number( str((int(price) * (int(map.get(task, 0))))) ), light_blue)
+                    # sheet.write(startWrite-4, 1 + j, (task +'(Pris='+str(price)+'kr)'), header_light_blue)
+                    # sheet.write(startWrite-3, 1 + j, map.get(task, 0), light_blue)
+                    # sheet.write(startWrite-2, 1 + j, self.format_number( str((int(price) * (int(map.get(task, 0))))) ), light_blue)
+                    self.write_nan(sheet, startWrite-4, 1 + j, (task +'(Pris='+str(price)+'kr)'), header_light_blue)
+                    self.write_nan(sheet, startWrite-3, 1 + j, map.get(task, 0), light_blue)
+                    self.write_nan(sheet, startWrite-2, 1 + j, self.format_number( str((int(price) * (int(map.get(task, 0)))) )), light_blue)
             else:
-                sheet.write(startWrite-4, 1 + j, (task +'(Pris= ?)'), header_light_blue)
-                sheet.write(startWrite-3, 1 + j, map.get(task, 0), light_blue)
-                sheet.write(startWrite-2, 1 + j, " -- ", light_blue)
+                # sheet.write(startWrite-4, 1 + j, (task +'(Pris= ?)'), header_light_blue)
+                # sheet.write(startWrite-3, 1 + j, map.get(task, 0), light_blue)
+                # sheet.write(startWrite-2, 1 + j, " -- ", light_blue)
+                self.write_nan(sheet, startWrite-4, 1 + j, (task +'(Pris= ?)'), header_light_blue)
+                self.write_nan(sheet, startWrite-3, 1 + j, map.get(task, 0), light_blue)
+                self.write_nan(sheet, startWrite-2, 1 + j, " -- ", light_blue)
 
         
         # Write the dataframe to the excel file
@@ -234,9 +266,11 @@ class ExcelWriter(Writer):
                     # value = self.convert_date(str(self.df['Datum'].iloc[i]))
                     date = str(place.dataframe['Datum'].iloc[i])
                     value = date[4:6] + '/' + date[2:4] + '-' + '20' + date[0:2]
-                    sheet.write(startWrite + i, j, value)
+                    # sheet.write(startWrite + i, j, value)
+                    self.write_nan(sheet, startWrite + i, j, value)
                 else:
-                    sheet.write(startWrite + i, j, value)  # Start writing data from the third row
+                    # sheet.write(startWrite + i, j, value)  # Start writing data from the third row
+                    self.write_nan(sheet, startWrite + i, j, value)
         # Save the workbook to the file
         workbook.close()
 

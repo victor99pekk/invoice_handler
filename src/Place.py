@@ -7,7 +7,11 @@ class Place:
     def __init__(self, name, synonyms: Iterable, dataframe: pd.DataFrame=None, error: bool=False, task_prices: dict=None):
         self.name = name
         self.synonyms = set(synonyms)
-        self.dataframe = pd.DataFrame(columns=columns_to_keep)
+        if 'dropped' == name:
+            cols = dropped_columns
+        else:
+            cols = columns_to_keep
+        self.dataframe = pd.DataFrame(columns=cols)
         self.job_occurence = {}
         self.task_prices = task_prices
 
