@@ -23,20 +23,24 @@ class Environment:
 
     def iterate_input(self, folder_path, target_folder):
         filesWithWrongFormat = []
+        runProgram = True
 
         for filename in os.listdir(folder_path):
             file_path = os.path.join(folder_path, filename)
             if os.path.isfile(file_path) and (filename.endswith('.xls') or filename.endswith('.xlsx')):
-                success = self.run(file_path, self.place_list)
+                success = self.run(file_path, self.place_list, runProgram)
                 if success != "":
                     filesWithWrongFormat.append(success)
-                    #runProgram = False
-        writer = WriteChooser(target_folder)
-        #if runProgram:
-        
-        for place in self.place_list:
-            writer.write(place1=place)
-        return filesWithWrongFormat
+                    runProgram = False
+        if not runProgram:
+            return filesWithWrongFormat
+        else:
+            writer = WriteChooser(target_folder)
+            #if runProgram:
+            
+            for place in self.place_list:
+                writer.write(place1=place)
+            #return filesWithWrongFormat
     
     def sameColumns(self, col1):
         copiedArray = [s.strip().lower() if isinstance(s, str) else s for s in col1]
@@ -45,12 +49,13 @@ class Environment:
                 return False
         return True
     
-    def run(self, file_path, place_list):
+    def run(self, file_path, place_list, runProgram):
+        if not self.sameColumns(File.get_columns(file_path)):
+            #print(file_path.split("/")[-1])
+            return file_path.split("/")[-1]
+        if not runProgram:
+            return ""
+        
         file = File(file_path)
-
-        if not self.sameColumns(file.dataframe.columns):
-            return path.split("/")[-1]
-        # if not runProgram:
-        #     return ""
         file.sort(place_list)
         return ""

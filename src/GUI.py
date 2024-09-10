@@ -32,7 +32,7 @@ class DragDropWidget(QWidget):
 
         self.instruct = QTextEdit(self)
         self.instruct.setFont(font2)
-        self.instruct.setPlaceholderText("1. välj input folder som har fakturorna som ska sammanställas, och inget mer\n\n2. Namnge output foldern(namn för foldern där excelfilerna kommer ligga)\n\n3. Klicka på 'Sammanställ, så kommer din output foldern ligga på ditt desktop i 'salg_fakturor'-foldern")
+        self.instruct.setPlaceholderText("1. välj folder som har fakturora-filerna som ska sammanställas, och inget mer\n\n2. Namnge foldern där de sorterade filerna kommer ligga\n\n3. Klicka på 'Sammanställ, så kommer din foldern med de sorterade filerna ligga på ditt desktop i 'salg_fakturor'-foldern")
         self.instruct.setMinimumHeight(200)
         self.instruct.setReadOnly(True)
         layout.addWidget(self.instruct)

@@ -203,8 +203,6 @@ class ExcelWriter(Writer):
         header_light_blue = workbook.add_format(header_light_blue_format)
 
         # write name of the district to the top right corner of excel file
-        # sheet.write(0, 0, str(place.name.capitalize()), header)
-        # sheet.write(0, 1, 'skapades: ' + str(datetime.date.today()), small_text)
         self.write_nan(sheet, 0, 0, str(place.name.capitalize()), header)
         self.write_nan(sheet, 0, 1, 'skapades: ' + str(datetime.date.today()), small_text)
 
@@ -213,50 +211,43 @@ class ExcelWriter(Writer):
         
         # Write column names to the first row
         for j, col_name in enumerate(place.dataframe.columns):
-            # sheet.write(startWrite-1, j, col_name, yellow)
             self.write_nan(sheet, startWrite-1, j, col_name, yellow)
 
 
         # Write occurrences of the different tasks
-         # Write the occurences of the different tasks
-        # sheet.write(startWrite-3, 0, 'Antal', header_light_blue)
-        # sheet.write(startWrite-2, 0, 'Totalt Pris', header_light_blue)
-        self.write_nan(sheet, startWrite-4, 0, 'Datum', header_light_blue)
-        self.write_nan(sheet, startWrite-4, 1, 'Tjänst', header_light_blue)
+        sheet.write(startWrite-3, 0, 'Antal', header_light_blue)
+        sheet.write(startWrite-2, 0, 'Totalt Pris', header_light_blue)
 
         discount_count = 0
         map = place.job_occurence
 
         for index in range(1, len(place.dataframe)):
             if self.half_hour_diff(place.dataframe, 30, index):
-                place.dataframe.loc[index, 'Kostnad'] = rabatt + ' kr'
+                #place.dataframe.loc[index, 'Kostnad'] = '(rabatt)                  ' + rabatt
+                place.dataframe.at[index, 'Kostnad'] = '(rabatt)                  ' + rabatt
                 discount_count += 1
         for j, task in enumerate(set(taskMapping.values())):
             price = place.get_price(str(task)) # this function will return none if the task is not in the dictionary
-            if price == 0 and task.lower() == 'läkemedel' or task.lower() == 'medicin':
-                price = int(place.dataframe.iloc[j]['Kostnad'])
+            if price == 0 or (task.lower() == 'läkemedel' or task.lower() == 'medicin'):
+                #price = int(place.dataframe.iloc[j]['Kostnad'])
+                price = " -- "
             if str.isdigit(str(price)):
                 if task == 'Blod':
-                    # sheet.write(startWrite-4, 1 + j, (task +'(Pris='+str(price)+'kr)'), header_light_blue)
-                    # sheet.write(startWrite-3, 1 + j, str(map.get(task, 0)-discount_count)+',   r: '+str(discount_count), light_blue)
-                    # sheet.write(startWrite-2, 1 + j, self.format_number( str((int(price) * (int(map.get(task, 0))-discount_count)) + (discount_count* int(rabatt))) ), light_blue)
                     self.write_nan(sheet, startWrite-4, 1 + j, (task +'(Pris='+str(price)+'kr)'), header_light_blue)
-                    self.write_nan(sheet, startWrite-3, 1 + j, str(map.get(task, 0)-discount_count)+',   r: '+str(discount_count), light_blue)
+                    self.write_nan(sheet, startWrite-3, 1 + j, str(map.get(task, 0)-discount_count)+',   rabatt: '+str(discount_count), light_blue)
                     self.write_nan(sheet, startWrite-2, 1 + j, self.format_number( str((int(price) * (int(map.get(task, 0))-discount_count)) + (discount_count* int(rabatt)))) , light_blue)
                 else:
-                    # sheet.write(startWrite-4, 1 + j, (task +'(Pris='+str(price)+'kr)'), header_light_blue)
-                    # sheet.write(startWrite-3, 1 + j, map.get(task, 0), light_blue)
-                    # sheet.write(startWrite-2, 1 + j, self.format_number( str((int(price) * (int(map.get(task, 0))))) ), light_blue)
                     self.write_nan(sheet, startWrite-4, 1 + j, (task +'(Pris='+str(price)+'kr)'), header_light_blue)
                     self.write_nan(sheet, startWrite-3, 1 + j, map.get(task, 0), light_blue)
                     self.write_nan(sheet, startWrite-2, 1 + j, self.format_number( str((int(price) * (int(map.get(task, 0)))) )), light_blue)
+            
             else:
-                # sheet.write(startWrite-4, 1 + j, (task +'(Pris= ?)'), header_light_blue)
-                # sheet.write(startWrite-3, 1 + j, map.get(task, 0), light_blue)
-                # sheet.write(startWrite-2, 1 + j, " -- ", light_blue)
                 self.write_nan(sheet, startWrite-4, 1 + j, (task +'(Pris= ?)'), header_light_blue)
                 self.write_nan(sheet, startWrite-3, 1 + j, map.get(task, 0), light_blue)
-                self.write_nan(sheet, startWrite-2, 1 + j, " -- ", light_blue)
+                if (task.lower() == 'läkemedel' or task.lower() == 'medicin'):
+                    self.write_nan(sheet, startWrite-2, 1 + j, "räkna för hand ", light_blue)
+                else:
+                    self.write_nan(sheet, startWrite-2, 1 + j, "tjänst finns ej i distriktet", light_blue)
 
         
         # Write the dataframe to the excel file

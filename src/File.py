@@ -15,6 +15,20 @@ class File:
                 return list[0] + 1
         return -1
     
+    @staticmethod
+    def get_columns(path):
+        df = pd.read_excel(path)
+
+        start = -1
+        for names in ["Datum"]:
+            list = df.index[df.iloc[:, 0] == names].tolist()
+            if len(list) > 0:
+                start = list[0] + 1
+        # Create a new DataFrame without the first n rows
+        data = df.iloc[start:].copy()
+        data.rename(columns=df.iloc[start-1], inplace=True)
+        return data.columns
+    
     def get_dataframe(self):
         df = pd.read_excel(self.path)
 
