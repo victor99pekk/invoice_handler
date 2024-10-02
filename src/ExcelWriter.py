@@ -234,20 +234,8 @@ class ExcelWriter(Writer):
         map = place.job_occurence
 
         for index in range(1, len(place.dataframe)):
-            if self.half_hour_diff(place.dataframe, 30, index):
-
-                print(f"Index: {index}")
-                print(f"Rabatt: {rabatt}")
-                print(f"Before assignment: {place.dataframe.loc[index, 'Kostnad']}")
-                
+            if self.half_hour_diff(place.dataframe, 30, index):  
                 place.dataframe.iat[index, place.dataframe.columns.get_loc('Kostnad')] = '(rabatt)                  ' + rabatt
-
-                print(place.dataframe.loc[index, 'Tjänst'], place.dataframe.loc[index-1, 'Tjänst'])
-                print(place.dataframe.iloc[index]['Tjänst'], place.dataframe.iloc[index-1]['Tjänst'])
-                print()
-                print()
-                print(f"After assignment: {place.dataframe.loc[index, 'Kostnad']}")
-                print()
                 discount_count += 1
 
         for j, task in enumerate(set(taskMapping.values())):
@@ -287,8 +275,8 @@ class ExcelWriter(Writer):
                     # sheet.write(startWrite + i, j, value)  # Start writing data from the third row
                     self.write_nan(sheet, startWrite + i, j, value)
                 else:
-                    price = place.get_price(str(place.dataframe.loc[i, 'Tjänst']))
-                    print(place.task_prices.get(str(place.dataframe.loc[i, 'Tjänst']),0), str(place.dataframe.loc[i, 'Tjänst']), place.task_prices)
+                    price = place.get_price(str(place.dataframe.iloc[i]['Tjänst']))
+                    # print(place.task_prices.get(str(place.dataframe.iloc[i]['Tjänst']),0), str(place.dataframe.iloc[i]['Tjänst']), place.task_prices)
                     # print("price= " + str(place.task_prices[str(place.dataframe.loc[j, 'Tjänst'])]), place.dataframe.loc[i, 'Tjänst'], place.task_prices)
                     if price == 0 or 'rabatt' in str(value):
                         self.write_nan(sheet, startWrite + i, j, value)
