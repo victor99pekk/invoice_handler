@@ -57,27 +57,19 @@ class Writer(ABC):
         return datetime.datetime(year=int(year), month=int(month), day=int(day), hour=int(hour), minute=int(minute), second=0)
 
     
-    def half_hour_diff(self, df1, timediff, index, serviceIndex, service2, timeindex, time2):
-        # if (not Row.valid_time(str(df1.iloc[index]['Tid']))) or (not Row.valid_time(str(df1.iloc[index-1]['Tid']))):
-        #     return False
+    # def half_hour_diff(self, df1, timediff, index, serviceIndex, service2, timeindex, time2, dist1, dist2):
+    def half_hour_diff(self, df1, timediff, index):
         if (not Row.valid_time(str(df1.iloc[index]['Tid']))) or (not Row.valid_time(str(df1.iloc[index-1]['Tid']))):
             return False
-        # dateA = self.get_datetime(df1, index)
-        # dateB = self.get_datetime(df1, index - 1)
-        dateA = timeindex
-        dateB = time2
-        difference = abs(dateB - dateA)
-        correct_timeDiff = (difference  < datetime.timedelta(minutes=timediff+1))
-        # print(str(df.iloc[index-1]['Tjänst']))
-        # print(str(df.iloc[index]['Tjänst']))
-        # print(serviceIndex, service2)
-        # print(str(df1.iloc[index-1]['Tjänst']), str(df1.iloc[index]['Tjänst']))
-        # print(str(df1.loc[index-1, 'Tjänst']), str(df1.loc[index, 'Tjänst']))
-        correct_task = str(df1.iloc[index-1]['Tjänst']) == 'Blod' and str(df1.iloc[index]['Tjänst']) == 'Blod'
-        # correct_task = serviceIndex == 'Blod' and service2 == 'Blod'
+        dateA = self.get_datetime(df1, index)
+        dateB = self.get_datetime(df1, index - 1)
 
-        # print(correct_task)
-        # print()
+        difference = abs(dateB - dateA)
+
+        correct_timeDiff = (difference  < datetime.timedelta(minutes=timediff+1))
+
+        correct_task = str(df1.iloc[index-1]['Tjänst']) == 'Blod' and str(df1.iloc[index]['Tjänst']) == 'Blod'
+
         correct_district = str(df1.iloc[index-1]['Distrikt']) == str(df1.iloc[index]['Distrikt'])
 
         return correct_timeDiff and correct_task and correct_district
@@ -235,23 +227,20 @@ class ExcelWriter(Writer):
         map = place.job_occurence
 
         for index in range(1, len(place.dataframe)):
-            # dateA = self.get_datetime(df1, index)
-            # dateB = self.get_datetime(df1, index - 1)
-            if (not Row.valid_time(str(place.dataframe.iloc[index]['Tid']))) or (not Row.valid_time(str(place.dataframe.iloc[index-1]['Tid']))):
-                continue
-            timeindex = self.get_datetime(place.dataframe, index)
-            time2 = self.get_datetime(place.dataframe, index-1)
-            if self.half_hour_diff(place.dataframe, 30, index, str(place.dataframe.loc[index, 'Tjänst']), str(place.dataframe.loc[index-1, 'Tjänst']), timeindex, time2):
-                # print(f"Index: {index}")
-                # print(f"Rabatt: {rabatt}")
-                # print(f"Before assignment: {place.dataframe.loc[index, 'Kostnad']}")
-                place.dataframe.loc[index, 'Kostnad'] = '(rabatt)                  ' + rabatt
-                # print(place.dataframe.loc[index, 'Tjänst'], place.dataframe.loc[index-1, 'Tjänst'])
-                # print()
-                # print()
-                # print(f"After assignment: {place.dataframe.loc[index, 'Kostnad']}")
-                # print()
-                # place.dataframe.at[index, 'Kostnad'] = '(rabatt)                  ' + rabatt
+            if self.half_hour_diff(place.dataframe, 30, index):
+
+                print(f"Index: {index}")
+                print(f"Rabatt: {rabatt}")
+                print(f"Before assignment: {place.dataframe.loc[index, 'Kostnad']}")
+                
+                place.dataframe.iat[index, place.dataframe.columns.get_loc('Kostnad')] = '(rabatt)                  ' + rabatt
+
+                print(place.dataframe.loc[index, 'Tjänst'], place.dataframe.loc[index-1, 'Tjänst'])
+                print(place.dataframe.iloc[index]['Tjänst'], place.dataframe.iloc[index-1]['Tjänst'])
+                print()
+                print()
+                print(f"After assignment: {place.dataframe.loc[index, 'Kostnad']}")
+                print()
                 discount_count += 1
 
         for j, task in enumerate(set(taskMapping.values())):
