@@ -59,20 +59,27 @@ class Writer(ABC):
     
     # def half_hour_diff(self, df1, timediff, index, serviceIndex, service2, timeindex, time2, dist1, dist2):
     def half_hour_diff(self, df1, timediff, index):
-        if (not Row.valid_time(str(df1.iloc[index]['Tid']))) or (not Row.valid_time(str(df1.iloc[index-1]['Tid']))):
-            return False
-        dateA = self.get_datetime(df1, index)
-        dateB = self.get_datetime(df1, index - 1)
+        found = False
+        second_index = index-1
+        while not found and second_index >= 0:
+            if (not Row.valid_time(str(df1.iloc[index]['Tid']))) or (not Row.valid_time(str(df1.iloc[second_index]['Tid']))):
+                return False
+            dateA = self.get_datetime(df1, index)
+            dateB = self.get_datetime(df1, second_index)
 
-        difference = abs(dateB - dateA)
+            difference = abs(dateB - dateA)
 
-        correct_timeDiff = (difference  < datetime.timedelta(minutes=timediff+1))
+            correct_timeDiff = (difference  < datetime.timedelta(minutes=timediff+1))
 
-        correct_task = str(df1.iloc[index-1]['Tjänst']) == 'Blod' and str(df1.iloc[index]['Tjänst']) == 'Blod'
+            correct_task = str(df1.iloc[second_index]['Tjänst']) == 'Blod' and str(df1.iloc[index]['Tjänst']) == 'Blod'
 
-        correct_district = str(df1.iloc[index-1]['Distrikt']) == str(df1.iloc[index]['Distrikt'])
+            correct_district = str(df1.iloc[second_index]['Distrikt']) == str(df1.iloc[index]['Distrikt'])
 
-        return correct_timeDiff and correct_task and correct_district
+            found = correct_timeDiff and correct_task and correct_district
+
+            second_index -= 1
+
+        return found
     
     def write_nan(self, worksheet, row_idx, col_idx, value, format=None):
         if isinstance(value, float) and (math.isnan(value) or math.isinf(value)):
