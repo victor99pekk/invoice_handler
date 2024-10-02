@@ -9,15 +9,15 @@ class Environment:
     def __init__(self):
         self.misnamed = Place('misnamed', synonyms=["misnamed"])
         self.nord = Place('nord', synonyms=["solna","västerort", "arlanda", "nord", "norrort","norrort", "nord", "solna", "norrort"], 
-                          task_prices={'Blod': 1800, 'Arrestvård': 2300, 'Död': 7000, 'Rape kit': 7200, 'Urinprov':1200, 'Utryckning utan uppdrag':1200, 'kroppsbesiktning+rättsintyg':2000})
+                          task_prices={'Blod': 1800, 'Arrestvård': 2300, 'Död': 7000, 'Rape kit': 7200, 'Urinprov':1200, 'Utryckning utan uppdrag':1200, 'Kroppsbesiktning+rättsintyg':2000})
         self.syd = Place('syd', synonyms=["södertörn", "syd", "flemingsberg", "nacka", "flempan", "söderort", "stockholm syd", "västberga"],
-                         task_prices={'Blod': 2200, 'Arrestvård': 2200, 'Död': 7000, 'Rape kit': 5000, 'Urinprov':1200, 'Utryckning utan uppdrag':1200, 'kroppsbesiktning+rättsintyg':2000})
+                         task_prices={'Blod': 2200, 'Arrestvård': 2200, 'Död': 7000, 'Rape kit': 5000, 'Urinprov':1200, 'Utryckning utan uppdrag':1200, 'Kroppsbesiktning+rättsintyg':2000})
         self.norrtalje = Place('norrtälje', synonyms=["norrtälje", "norrtalje"],
-                               task_prices={'Jourläkare': 2000, 'Blod': 3000, 'Arrestvård': 3120, 'Död': 3240, 'Rape kit': 7200, 'Urinprov':1200, 'Utryckning utan uppdrag':1200, 'kroppsbesiktning+rättsintyg':2000})
+                               task_prices={'Jourläkare': 2000, 'Blod': 3000, 'Arrestvård': 3120, 'Död': 3240, 'Rape kit': 7200, 'Urinprov':1200, 'Utryckning utan uppdrag':1200, 'Kroppsbesiktning+rättsintyg':2000})
         self.sodertalje = Place('södertälje', synonyms=["södertälje", "södertalje", "sodertalje", "sodertälje"],
-                                task_prices={'Jourläkare': 2000, 'Blod': 3000, 'Arrestvård': 3120, 'Död': 3240, 'Rape kit': 7200, 'Urinprov':1200, 'Utryckning utan uppdrag':1200, 'kroppsbesiktning+rättsintyg':2000})
+                                task_prices={'Jourläkare': 2000, 'Blod': 3000, 'Arrestvård': 3120, 'Död': 3240, 'Rape kit': 7200, 'Urinprov':1200, 'Utryckning utan uppdrag':1200, 'Kroppsbesiktning+rättsintyg':2000})
         self.city = Place('city', synonyms=["kronoberg", "city", "norrmalm", "kungsholmen", "vasastan", "östermalm", "city", "stockholm city", "stockholm", "södermalm", "söderort"],
-                          task_prices={'Blod': 3900, 'Arrestvård': 900, 'Död': 7000, 'Rape kit': 5200, 'Urinprov':1200, 'Utryckning utan uppdrag':1200, 'kroppsbesiktning+rättsintyg':2000})
+                          task_prices={'Blod': 3900, 'Arrestvård': 900, 'Död': 7000, 'Rape kit': 5200, 'Urinprov':1200, 'Utryckning utan uppdrag':1200, 'Kroppsbesiktning+rättsintyg':2000})
         self.dropped = Place('dropped', synonyms=["dropped"])
         self.place_list = [self.misnamed, self.nord, self.syd, self.norrtalje, self.sodertalje, self.city, self.dropped]
 
