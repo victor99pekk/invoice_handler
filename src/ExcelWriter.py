@@ -57,17 +57,29 @@ class Writer(ABC):
         return datetime.datetime(year=int(year), month=int(month), day=int(day), hour=int(hour), minute=int(minute), second=0)
 
     
-    def half_hour_diff(self, df, timediff, index):
-        if (not Row.valid_time(str(df.iloc[index]['Tid']))) or (not Row.valid_time(str(df.iloc[index-1]['Tid']))):
-            return False
-        dateA = self.get_datetime(df, index)
-        dateB = self.get_datetime(df, index - 1)
-        difference = abs(dateB - dateA)
-        correct_timeDiff = (difference  < datetime.timedelta(minutes=timediff+1))
-        correct_task = str(df.iloc[index-1]['Tjänst']) == 'Blod' and str(df.iloc[index]['Tjänst']) == 'Blod'
-        correct_district = str(df.iloc[index-1]['Distrikt']) == str(df.iloc[index]['Distrikt'])
+    # def half_hour_diff(self, df1, timediff, index, serviceIndex, service2, timeindex, time2, dist1, dist2):
+    def half_hour_diff(self, df1, timediff, index):
+        found = False
+        second_index = index-1
+        while not found and second_index >= 0:
+            if (not Row.valid_time(str(df1.iloc[index]['Tid']))) or (not Row.valid_time(str(df1.iloc[second_index]['Tid']))):
+                return False
+            dateA = self.get_datetime(df1, index)
+            dateB = self.get_datetime(df1, second_index)
 
-        return correct_timeDiff and correct_task and correct_district
+            difference = abs(dateB - dateA)
+
+            correct_timeDiff = (difference  < datetime.timedelta(minutes=timediff+1))
+
+            correct_task = str(df1.iloc[second_index]['Tjänst']) == 'Blod' and str(df1.iloc[index]['Tjänst']) == 'Blod'
+
+            correct_district = str(df1.iloc[second_index]['Distrikt']) == str(df1.iloc[index]['Distrikt'])
+
+            found = correct_timeDiff and correct_task and correct_district
+
+            second_index -= 1
+
+        return found
     
     def write_nan(self, worksheet, row_idx, col_idx, value, format=None):
         if isinstance(value, float) and (math.isnan(value) or math.isinf(value)):
@@ -222,10 +234,10 @@ class ExcelWriter(Writer):
         map = place.job_occurence
 
         for index in range(1, len(place.dataframe)):
-            if self.half_hour_diff(place.dataframe, 30, index):
-                #place.dataframe.loc[index, 'Kostnad'] = '(rabatt)                  ' + rabatt
-                place.dataframe.at[index, 'Kostnad'] = '(rabatt)                  ' + rabatt
+            if self.half_hour_diff(place.dataframe, 30, index):  
+                place.dataframe.iat[index, place.dataframe.columns.get_loc('Kostnad')] = '(rabatt)                  ' + rabatt
                 discount_count += 1
+
         for j, task in enumerate(set(taskMapping.values())):
             price = place.get_price(str(task)) # this function will return none if the task is not in the dictionary
             if price == 0 or (task.lower() == 'läkemedel' or task.lower() == 'medicin'):
@@ -252,16 +264,20 @@ class ExcelWriter(Writer):
         
         # Write the dataframe to the excel file
         for i, row in enumerate(place.dataframe.values):
+            print(row)
             for j, value in enumerate(row):
                 if j == 0:
-                    # value = self.convert_date(str(self.df['Datum'].iloc[i]))
                     date = str(place.dataframe['Datum'].iloc[i])
                     value = date[4:6] + '/' + date[2:4] + '-' + '20' + date[0:2]
-                    # sheet.write(startWrite + i, j, value)
+                    self.write_nan(sheet, startWrite + i, j, value)
+                elif j != 9:
                     self.write_nan(sheet, startWrite + i, j, value)
                 else:
-                    # sheet.write(startWrite + i, j, value)  # Start writing data from the third row
-                    self.write_nan(sheet, startWrite + i, j, value)
+                    price = place.get_price(str(place.dataframe.iloc[i]['Tjänst']))
+                    if price == 0 or 'rabatt' in str(value):
+                        self.write_nan(sheet, startWrite + i, j, value)
+                    else:
+                        self.write_nan(sheet, startWrite + i, j, price)
         # Save the workbook to the file
         workbook.close()
 
