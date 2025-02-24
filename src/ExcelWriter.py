@@ -264,20 +264,16 @@ class ExcelWriter(Writer):
         
         # Write the dataframe to the excel file
         for i, row in enumerate(place.dataframe.values):
+            print(row)
             for j, value in enumerate(row):
                 if j == 0:
-                    # value = self.convert_date(str(self.df['Datum'].iloc[i]))
                     date = str(place.dataframe['Datum'].iloc[i])
                     value = date[4:6] + '/' + date[2:4] + '-' + '20' + date[0:2]
-                    # sheet.write(startWrite + i, j, value)
                     self.write_nan(sheet, startWrite + i, j, value)
                 elif j != 9:
-                    # sheet.write(startWrite + i, j, value)  # Start writing data from the third row
                     self.write_nan(sheet, startWrite + i, j, value)
                 else:
                     price = place.get_price(str(place.dataframe.iloc[i]['Tjänst']))
-                    # print(place.task_prices.get(str(place.dataframe.iloc[i]['Tjänst']),0), str(place.dataframe.iloc[i]['Tjänst']), place.task_prices)
-                    # print("price= " + str(place.task_prices[str(place.dataframe.loc[j, 'Tjänst'])]), place.dataframe.loc[i, 'Tjänst'], place.task_prices)
                     if price == 0 or 'rabatt' in str(value):
                         self.write_nan(sheet, startWrite + i, j, value)
                     else:
